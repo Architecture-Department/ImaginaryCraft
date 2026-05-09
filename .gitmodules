@@ -1,20 +1,20 @@
 [submodule "module/GoldenBoughsLib"]
 	path = module/GoldenBoughsLib
 	url = https://github.com/Architecture-Department/GoldenBoughsLib
-	branch = main
+	branch = 1.21.1/dev
 [submodule "module/EGOCurios"]
 	path = module/EGOCurios
 	url = https://github.com/Architecture-Department/EGOCurios
-	branch = main
+	branch = 1.21.1/dev
 [submodule "module/ResonatorCombatFramework"]
 	path = module/ResonatorCombatFramework
 	url = https://github.com/Architecture-Department/ResonatorCombatFramework
-	branch = main
+	branch = 1.21.1/dev
 [submodule "module/Abnormalities"]
 	path = module/Abnormalities
 	url = https://github.com/Architecture-Department/Abnormalities
-	branch = main
+	branch = 1.21.1/dev
 [submodule "module/EGOEquipment"]
 	path = module/EGOEquipment
 	url = https://github.com/Architecture-Department/EGOEquipment
-	branch = main
+	branch = 1.21.1/dev
