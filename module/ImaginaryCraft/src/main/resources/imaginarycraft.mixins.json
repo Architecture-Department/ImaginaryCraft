@@ -1,0 +1,18 @@
+{
+	"required": true,
+	"package": "architecture.imaginarycraft.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+	],
+	"client": [
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	},
+	"mixinextras": {
+		"minVersion": "0.5.0"
+	}
+}

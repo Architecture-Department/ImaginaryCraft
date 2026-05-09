@@ -1,0 +1,203 @@
+plugins {
+}
+
+sourceSets.main.resources {
+	srcDir('src/generated/resources')
+
+	exclude("**/*.bbmodel")
+	exclude("src/generated/**/.cache")
+}
+
+var projectName = [
+				"GoldenBoughsLib",
+				"ResonatorCombatFramework",
+				"EGOCurios",
+				"EGOEquipment",
+				"Abnormalities",
+]
+
+version = mod_version
+group = mod_group_id
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+base {
+	archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+	interfaceInjectionData {
+		from "src/main/resources/META-INF/interfaces.json"
+		publish file("src/main/resources/META-INF/interfaces.json")
+	}
+
+	version = project.neo_version
+
+	parchment {
+		mappingsVersion = project.parchment_mappings_version
+		minecraftVersion = project.parchment_minecraft_version
+	}
+
+	runs {
+		client {
+			client()
+			systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+		}
+
+		clientAuth {
+			client()
+			systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+			devLogin = true
+		}
+
+		server {
+			server()
+			programArgument '--nogui'
+			systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+		}
+		gameTestServer {
+			type = "gameTestServer"
+			systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+		}
+
+		data {
+			data()
+			gameDirectory = project.file('run-data')
+			programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+		}
+
+		configureEach {
+			systemProperty 'forge.logging.markers', 'REGISTRIES'
+			systemProperty 'forge.logging.console.level', 'debug'
+
+			jvmArguments.addAll([
+							// 忽略无效指令，避免有的人没安装 JetBrain Runtime 无法启动游戏
+							"-XX:+IgnoreUnrecognizedVMOptions",
+							// 启用 JetBrain Runtime 热重载功能
+							"-XX:+AllowEnhancedClassRedefinition",
+			])
+
+			logLevel = org.slf4j.event.Level.DEBUG
+		}
+	}
+
+	mods {
+		"${mod_id}" {
+			sourceSet(sourceSets.main)
+		}
+	}
+}
+
+configurations {
+	runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+	projectName.forEach { name ->
+		{
+			implementation jarJar(project(":module:" + name))
+			interfaceInjectionData jarJar(project(":module:" + name))
+		}
+	}
+
+	implementation "net.neoforged:neoforge:${neo_version}"
+	runtimeOnly "org.javassist:javassist:${javassist_version}"
+
+	// geckolib
+	implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+
+	// curios 饰品
+	implementation "top.theillusivec4.curios:curios-neoforge:${curios_api_version}"
+	implementation "top.theillusivec4.curios:curios-neoforge:${curios_api_version}:api"
+
+	// MixinSquared
+	compileOnly(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-common:${mixinsquared_version}"))
+	implementation(jarJar("com.github.bawnorton.mixinsquared:mixinsquared-neoforge:${mixinsquared_version}"))
+
+	// Kotlin
+	implementation "thedarkcolour:kotlinforforge-neoforge:${kotlinforforge_version}"
+
+	// 添加目录的jar文件作为库
+	implementation files(fileTree(dir: "../../额外资源/mods", include: ["*.jar"]))
+
+	// Jade
+	implementation "maven.modrinth:jade:${jade_version}+neoforge"
+
+	// JEI
+	compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+	compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+	runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+
+	// 试验假人
+	implementation "maven.modrinth:mmmmmmmmmmmm:${mmmmmmmmmmmm_version}"
+	implementation "maven.modrinth:moonlight:${moonlight_version}"
+
+	fileTree(dir: "../../libs", include: ["*.jar"]).forEach { file ->
+		{
+			final def collection = files(file)
+			if (file.name.endsWith("-sources.jar")) {
+				compileOnly(collection)
+				return
+			}
+			implementation(collection)
+			// 检查JAR文件中是否包含interfaces.json
+			zipTree(file).matching {
+				include 'META-INF/*interfaces.json'
+			}.each { jarEntry ->
+				interfaceInjectionData(files(jarEntry))
+			}
+		}
+	}
+}
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+	var replaceProperties = [
+					minecraft_version      : minecraft_version,
+					minecraft_version_range: minecraft_version_range,
+					neo_version            : neo_version,
+					loader_version_range   : loader_version_range,
+					mod_id                 : mod_id,
+					mod_name               : mod_name,
+					mod_license            : mod_license,
+					mod_version            : mod_version,
+					mod_authors            : mod_authors,
+					mod_description        : mod_description,
+					geckolib_version       : geckolib_version,
+					curios_api_version     : curios_api_version]
+	inputs.properties replaceProperties
+	expand replaceProperties
+	from "src/main/templates"
+	into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+publishing {
+	publications {
+		register('mavenJava', MavenPublication) {
+			from components.java
+		}
+	}
+	repositories {
+		maven {
+			url "file://${project.projectDir}/repo"
+		}
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+}
+
+idea {
+	module {
+		downloadSources = true
+		downloadJavadoc = true
+	}
+}
