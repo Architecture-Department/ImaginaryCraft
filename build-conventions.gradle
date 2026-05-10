@@ -1,0 +1,21 @@
+allOpen {
+	annotation("architecture.goldenboughs_lib.api.AllOpe")
+}
+
+sourceSets.main.resources {
+	srcDir('src/generated/resources')
+
+	exclude("**/*.bbmodel")
+	exclude("src/generated/**/.cache")
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+}
+
+idea {
+	module {
+		downloadSources = true
+		downloadJavadoc = true
+	}
+}
