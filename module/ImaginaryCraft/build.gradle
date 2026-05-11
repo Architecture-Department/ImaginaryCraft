@@ -117,9 +117,6 @@ dependencies {
 	compileOnly(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-common:${mixinsquared_version}"))
 	implementation(jarJar("com.github.bawnorton.mixinsquared:mixinsquared-neoforge:${mixinsquared_version}"))
 
-	// Kotlin
-	implementation "thedarkcolour:kotlinforforge-neoforge:${kotlinforforge_version}"
-
 	// 添加目录的jar文件作为库
 	implementation files(fileTree(dir: "../../额外资源/mods", include: ["*.jar"]))
 
@@ -171,6 +168,15 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 	expand replaceProperties
 	from "src/main/templates"
 	into "build/generated/sources/modMetadata"
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs += 'src/main/java'
+			srcDirs += 'src/main/kotlin'
+		}
+	}
 }
 
 sourceSets.main.resources.srcDir generateModMetadata

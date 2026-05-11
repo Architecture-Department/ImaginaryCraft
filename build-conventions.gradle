@@ -19,3 +19,15 @@ idea {
 		downloadJavadoc = true
 	}
 }
+
+dependencies {
+	// Use slim artifact of KFF
+	implementation("thedarkcolour:kotlinforforge-neoforge:${kotlinforforge_version}")
+//
+//	// Add Kotlin libs as non-mc libs in ModDevGradle
+//	additionalRuntimeClasspath ('org.jetbrains.kotlin:kotlin-stdlib')
+//	additionalRuntimeClasspath ('org.jetbrains.kotlin:kotlin-reflect')
+//	additionalRuntimeClasspath ('org.jetbrains.kotlinx:kotlinx-coroutines-core')
+//	additionalRuntimeClasspath ('org.jetbrains.kotlinx:kotlinx-serialization-core')
+//	additionalRuntimeClasspath ('org.jetbrains.kotlinx:kotlinx-serialization-json')
+}
