@@ -80,6 +80,8 @@
 
 <hr>
 
+本mod有部分代码来源来自[AnvilLib](https://github.com/Anvil-Dev/AnvilLib/)欢迎大家使用这个lib
+
 ## 联动MOD
 
 | 名称                                      |
