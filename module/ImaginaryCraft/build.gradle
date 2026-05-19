@@ -132,6 +132,8 @@ dependencies {
 	implementation "maven.modrinth:mmmmmmmmmmmm:${mmmmmmmmmmmm_version}"
 	implementation "maven.modrinth:moonlight:${moonlight_version}"
 
+	implementation "maven.modrinth:eyelib:${eyelib_version}"
+
 	fileTree(dir: "../../libs", include: ["*.jar"]).forEach { file ->
 		{
 			final def collection = files(file)
