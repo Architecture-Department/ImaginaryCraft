@@ -30,6 +30,13 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.${ mod_id }]]
+modId = "curios"
+type = "required"
+versionRange = "${curios_api_version}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${ mod_id }]]
 modId = "geckolib"
 type = "required"
 versionRange = "${geckolib_version}"
@@ -37,8 +44,8 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.${ mod_id }]]
-modId = "curios"
+modId = "eyelib"
 type = "required"
-versionRange = "${curios_api_version}"
+versionRange = "${eyelib_version}"
 ordering = "NONE"
 side = "BOTH"

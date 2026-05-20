@@ -1,0 +1,3 @@
+package architecture.imaginarycraft.core
+
+object ImaginaryCraftConstants

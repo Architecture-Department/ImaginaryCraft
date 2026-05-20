@@ -132,7 +132,7 @@ dependencies {
 	implementation "maven.modrinth:mmmmmmmmmmmm:${mmmmmmmmmmmm_version}"
 	implementation "maven.modrinth:moonlight:${moonlight_version}"
 
-	implementation "maven.modrinth:eyelib:${eyelib_version}"
+	implementation "maven.modrinth:eyelib:${eyelib_api_version}"
 
 	fileTree(dir: "../../libs", include: ["*.jar"]).forEach { file ->
 		{
@@ -164,8 +164,10 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 					mod_version            : mod_version,
 					mod_authors            : mod_authors,
 					mod_description        : mod_description,
+					eyelib_version    : eyelib_version,
 					geckolib_version       : geckolib_version,
-					curios_api_version     : curios_api_version]
+					curios_api_version: curios_api_version
+	]
 	inputs.properties replaceProperties
 	expand replaceProperties
 	from "src/main/templates"
