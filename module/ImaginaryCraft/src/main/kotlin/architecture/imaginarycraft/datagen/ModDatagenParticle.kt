@@ -24,7 +24,7 @@ class ModDatagenParticle(output: PackOutput, fileHelper: ExistingFileHelper) :
 		spriteSet(
 			type.get(),
 			Arrays.stream(names)
-				.map { name: String -> getPath(name) }
+				.map { name -> getPath(name) }
 				.collect(Collectors.toList())
 		)
 	}
