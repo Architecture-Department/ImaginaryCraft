@@ -3,7 +3,6 @@
 ## 目录
 
 <!-- TOC -->
-
 * [异想工艺](#异想工艺)
   * [目录](#目录)
   * [模块](#模块)
@@ -12,7 +11,14 @@
   * [本MOD前置](#本mod前置)
   * [联动MOD](#联动mod)
   * [项目构建](#项目构建)
-
+    * [拉取与初始化](#拉取与初始化)
+    * [构建系统](#构建系统)
+      * [快速开始](#快速开始)
+      * [新建模块](#新建模块)
+      * [模块依赖声明](#模块依赖声明)
+      * [neoforge.mods.toml](#neoforgemodstoml)
+      * [版本管理](#版本管理)
+      * [常用命令](#常用命令)
 <!-- TOC -->
 
 ## 模块
@@ -90,17 +96,99 @@
 
 ## 项目构建
 
-- 项目拉取完成后
-- 确认子项目文件是否有拉取，如空文件夹请按下列指令在终端内顺序执行
-  ~~~cmd
-    git submodule init
-    git submodule update
-  ~~~
+### 拉取与初始化
 
-- 如果想要添加新的子模块，请使用以下指令
-  ~~~cmd 
-  git submodule add -b "仓库的分支名" "仓库的url" module/仓库的名称
+子模块采用 monorepo 管理，拉取后确认子目录是否完整：
 
-- 例如
-  ~~~cmd 
-  git submodule add -b main https://github.com/Architecture-Department/ResonatorCombatFramework module/ResonatorCombatFramework
+```bash
+git submodule init
+git submodule update
+```
+
+### 构建系统
+
+所有模块通过 `build-conventions.gradle` 共享通用配置，版本号在根 `gradle.properties` 统一维护。单个模块的 `build.gradle`
+极简，仅声明特有依赖。
+
+#### 快速开始
+
+```bash
+./gradlew :module:ImaginaryCraft:build     # 构建最终产物
+./gradlew :module:ImaginaryCraft:runClient # 运行客户端
+./gradlew projects                         # 列出所有模块
+```
+
+#### 新建模块
+
+```bash
+./create_module.sh <ModName> <mod_id> "显示名" <group>
+
+# 示例
+./create_module.sh TestMod test_mod "Test Mod" architecture.test_mod
+```
+
+脚本自动创建目录结构、`gradle.properties`、`build.gradle`、`interfaces.json`、`neoforge.mods.toml`，并注册到
+`settings.gradle`。
+
+#### 模块依赖声明
+
+在模块 `build.gradle` 的 `dependencies {}` 块中使用辅助方法：
+
+| 方法                         | 用途                      |
+|----------------------------|-------------------------|
+| `addModuleDeps('A', 'B')`  | 上游模块依赖                  |
+| `addJarJarModuleDeps(...)` | jarJar 嵌入上游模块           |
+| `addMixinSquared()`        | MixinSquared 支持         |
+| `addJEI()`                 | JEI 配方查看                |
+| `addEyelib()`              | 动画引擎                    |
+| `addJade()`                | Jade 信息显示               |
+| `addCurios()`              | Curios API 饰品栏          |
+| `addDummyMobs()`           | 试验假人                    |
+| `addLocalLibs()`           | 加载 `../../libs/` 本地 JAR |
+| `addClientAuthRun()`       | 添加 devLogin 运行配置        |
+
+**典型模块 build.gradle：**
+
+```groovy
+plugins {}
+apply from: rootProject.file('build-conventions.gradle')
+
+dependencies {
+  addModuleDeps('GoldenBoughsLib', 'ResonatorCombatFramework')
+  addMixinSquared()
+  addEyelib()
+  addJade()
+  addJEI()
+  addDummyMobs()
+  addLocalLibs()
+}
+```
+
+#### neoforge.mods.toml
+
+模块模板只需声明模块特有内容，公共头部和 neoforge/minecraft 依赖由 `templates/mods-base.toml` 自动合并：
+
+```toml
+[[mixins]]
+config = "${mod_id}.mixins.json"
+
+[[dependencies.${ mod_id }]]
+modId = "geckolib"
+type = "required"
+versionRange = "${geckolib_version}"
+ordering = "NONE"
+side = "BOTH"
+```
+
+#### 版本管理
+
+所有第三方版本号在根 `gradle.properties` 维护，模块特有属性（mod_id、mod_name 等）在模块的 `gradle.properties` 中定义。
+
+#### 常用命令
+
+```bash
+./gradlew :module:GoldenBoughsLib:runClient     # 运行单个模块客户端
+./gradlew :module:ImaginaryCraft:runClientAuth   # devLogin 客户端
+./gradlew :module:ImaginaryCraft:runData         # 数据生成
+./gradlew build                                   # 构建全部
+```

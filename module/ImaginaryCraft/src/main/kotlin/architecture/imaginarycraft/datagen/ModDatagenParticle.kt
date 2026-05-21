@@ -6,7 +6,7 @@ import net.minecraft.data.PackOutput
 import net.minecraft.resources.ResourceLocation
 import net.neoforged.neoforge.common.data.ExistingFileHelper
 import net.neoforged.neoforge.common.data.ParticleDescriptionProvider
-import java.util.Arrays
+import java.util.*
 import java.util.function.Supplier
 import java.util.stream.Collectors
 
