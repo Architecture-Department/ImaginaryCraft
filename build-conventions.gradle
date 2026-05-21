@@ -356,16 +356,17 @@ neoForge {
 // ---------------------------------------------------------------------
 // 合并模块模板与公共基础模板 (templates/mods-base.toml)
 // ---------------------------------------------------------------------
+def baseTemplateFile = rootProject.file('templates/mods-base.toml')
+
 def mergeModsTemplate = tasks.register("mergeModsTemplate", Sync) {
 	from('src/main/templates')
 	into("${project.buildDir}/tmp/${project.name}-mods")
 
 	doLast {
-		def baseTemplate = rootProject.file('templates/mods-base.toml')
-		if (baseTemplate.exists()) {
+		if (baseTemplateFile.exists()) {
 			def mergedMods = file("${destinationDir}/META-INF/neoforge.mods.toml")
 			def existingContent = mergedMods.exists() ? mergedMods.text : ''
-			mergedMods.text = baseTemplate.text + '\n' + existingContent
+			mergedMods.text = baseTemplateFile.text + '\n' + existingContent
 		}
 	}
 }

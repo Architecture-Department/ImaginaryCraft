@@ -14,7 +14,6 @@ import net.neoforged.neoforge.data.event.GatherDataEvent
  */
 @EventBusSubscriber(modid = ImaginaryCraft.ID)
 object Datagen {
-	@JvmStatic
 	@SubscribeEvent
 	fun gatherData(event: GatherDataEvent) {
 		val generator = event.generator
