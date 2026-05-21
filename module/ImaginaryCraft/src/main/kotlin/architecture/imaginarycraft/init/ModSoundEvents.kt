@@ -11,7 +11,7 @@ object ModSoundEvents {
 	val REGISTRY: DeferredRegister<SoundEvent> = ImaginaryCraft.modRegister(BuiltInRegistries.SOUND_EVENT)
 
 	private fun registerForHolder(id: String, zhName: String, location: String): DeferredHolder<SoundEvent, SoundEvent> {
-		val register = REGISTRY.register(id) {
+		val register = REGISTRY.register(id) { ->
 			SoundEvent.createVariableRangeEvent(ImaginaryCraft.modRl(location))
 		}
 		ModZhCn.addI18nSoundEventText(zhName, register)

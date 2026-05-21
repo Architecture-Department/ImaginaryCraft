@@ -12,9 +12,8 @@ import net.neoforged.neoforge.client.model.generators.ItemModelBuilder
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider
 import net.neoforged.neoforge.client.model.generators.ModelFile
 import net.neoforged.neoforge.common.data.ExistingFileHelper
-import net.neoforged.neoforge.registries.DeferredHolder
 import net.neoforged.neoforge.registries.DeferredRegister
-import java.util.Objects
+import java.util.*
 
 /**
  * 物品模型数据生成器
@@ -28,7 +27,7 @@ class ModDatagenItemModel(output: PackOutput, existingFileHelper: ExistingFileHe
 
 	private fun extendWithFolder(rl: ResourceLocation): ResourceLocation {
 		return if (rl.path.contains("/")) rl
-		else ResourceLocation.fromNamespaceAndPath(rl.namespace, "$folder/${rl.path}")
+		else fromNamespaceAndPath(rl.namespace, "$folder/${rl.path}")
 	}
 
 	/**
@@ -39,10 +38,9 @@ class ModDatagenItemModel(output: PackOutput, existingFileHelper: ExistingFileHe
 	 * @param pathPrefix 模型路径前缀
 	 */
 	private fun withExistingParent(registry: DeferredRegister.Items, pathPrefix: String) {
-		registry.entries.stream().map(DeferredHolder<Item>::getId).forEach { itemId ->
+		registry.entries.stream().map { it.id }.forEach { itemId ->
 			IModelBuilder.of(this.withExistingParent(itemId.path, "item/generated"))
-				.goldenboughs_lib$getTexture()
-			.put("layer0", itemId.withPrefix(pathPrefix).toString())
+				.`goldenboughs_lib$getTexture`()["layer0"] = itemId.withPrefix(pathPrefix).toString()
 		}
 	}
 
