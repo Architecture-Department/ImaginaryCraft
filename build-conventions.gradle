@@ -364,7 +364,7 @@ def mergeModsTemplate = tasks.register("mergeModsTemplate", Sync) {
 
 	doLast {
 		if (baseTemplateFile.exists()) {
-			def mergedMods = file("${destinationDir}/META-INF/neoforge.mods.toml")
+			def mergedMods = new File(outputs.files.singleFile, "META-INF/neoforge.mods.toml")
 			def existingContent = mergedMods.exists() ? mergedMods.text : ''
 			mergedMods.text = baseTemplateFile.text + '\n' + existingContent
 		}
