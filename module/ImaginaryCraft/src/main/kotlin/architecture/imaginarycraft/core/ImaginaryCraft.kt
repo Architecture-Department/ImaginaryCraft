@@ -1,6 +1,7 @@
 package architecture.imaginarycraft.core
 
 import architecture.goldenboughs_lib.util.LibUtil.rlOf
+import architecture.imaginarycraft.init.IcModItems
 import architecture.imaginarycraft.init.IcSoundEvents
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceKey
@@ -30,6 +31,7 @@ object ImaginaryCraft {
 		val modBus = MOD_BUS
 
 		IcSoundEvents.REGISTRY.register(modBus)
+		IcModItems.REGISTRY.register(modBus)
 	}
 
 	@SubscribeEvent
