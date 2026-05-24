@@ -1,6 +1,7 @@
 package architecture.imaginarycraft.core
 
-import architecture.imaginarycraft.init.ModSoundEvents
+import architecture.goldenboughs_lib.util.LibUtil.rlOf
+import architecture.imaginarycraft.init.IcSoundEvents
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
@@ -28,7 +29,7 @@ object ImaginaryCraft {
 		val modContainer = LOADING_CONTEXT.activeContainer
 		val modBus = MOD_BUS
 
-		ModSoundEvents.REGISTRY.register(modBus)
+		IcSoundEvents.REGISTRY.register(modBus)
 	}
 
 	@SubscribeEvent
@@ -39,13 +40,13 @@ object ImaginaryCraft {
 	@JvmStatic
 	@Contract("_ -> new")
 	fun modRl(name: String): ResourceLocation {
-		return ResourceLocation.fromNamespaceAndPath(ID, name)
+		return rlOf(ID, name)
 	}
 
 	@JvmStatic
 	@Contract(pure = true)
 	fun modRlText(name: String): String {
-		return """$ID:$name"""
+		return "$ID:$name"
 	}
 
 	@JvmStatic

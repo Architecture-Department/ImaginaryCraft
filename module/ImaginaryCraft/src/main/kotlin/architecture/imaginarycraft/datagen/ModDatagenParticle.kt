@@ -17,7 +17,7 @@ class ModDatagenParticle(output: PackOutput, fileHelper: ExistingFileHelper) :
 	}
 
 	private fun <T : ParticleType<*>> sprite(type: Supplier<T>, name: String) {
-		sprite(type.get(), ResourceLocation.fromNamespaceAndPath(ImaginaryCraft.ID, name))
+		sprite(type.get(), ImaginaryCraft.modRl(name))
 	}
 
 	private fun <T : ParticleType<*>> sprite(type: Supplier<T>, vararg names: String) {
@@ -31,7 +31,7 @@ class ModDatagenParticle(output: PackOutput, fileHelper: ExistingFileHelper) :
 
 	companion object {
 		private fun getPath(name: String): ResourceLocation {
-			return ResourceLocation.fromNamespaceAndPath(ImaginaryCraft.ID, name)
+			return ImaginaryCraft.modRl(name)
 		}
 	}
 }
