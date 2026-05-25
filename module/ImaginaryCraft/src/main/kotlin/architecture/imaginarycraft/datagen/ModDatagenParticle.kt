@@ -9,6 +9,7 @@ import net.neoforged.neoforge.common.data.ParticleDescriptionProvider
 import java.util.*
 import java.util.function.Supplier
 import java.util.stream.Collectors
+import architecture.imaginarycraft.core.ImaginaryCraftConstants
 
 class ModDatagenParticle(output: PackOutput, fileHelper: ExistingFileHelper) :
 	ParticleDescriptionProvider(output, fileHelper) {
@@ -17,7 +18,7 @@ class ModDatagenParticle(output: PackOutput, fileHelper: ExistingFileHelper) :
 	}
 
 	private fun <T : ParticleType<*>> sprite(type: Supplier<T>, name: String) {
-		sprite(type.get(), ImaginaryCraft.modRl(name))
+		sprite(type.get(), ImaginaryCraftConstants.modRl(name))
 	}
 
 	private fun <T : ParticleType<*>> sprite(type: Supplier<T>, vararg names: String) {
@@ -31,7 +32,7 @@ class ModDatagenParticle(output: PackOutput, fileHelper: ExistingFileHelper) :
 
 	companion object {
 		private fun getPath(name: String): ResourceLocation {
-			return ImaginaryCraft.modRl(name)
+			return ImaginaryCraftConstants.modRl(name)
 		}
 	}
 }

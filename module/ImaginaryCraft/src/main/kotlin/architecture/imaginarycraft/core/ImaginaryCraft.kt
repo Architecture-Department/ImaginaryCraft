@@ -1,63 +1,29 @@
 package architecture.imaginarycraft.core
 
-import architecture.goldenboughs_lib.util.LibUtil.rlOf
-import architecture.imaginarycraft.init.IcModItems
+import architecture.imaginarycraft.core.ImaginaryCraftConstants.LOGGER
+import architecture.imaginarycraft.init.IcItems
 import architecture.imaginarycraft.init.IcSoundEvents
-import net.minecraft.core.Registry
-import net.minecraft.resources.ResourceKey
-import net.minecraft.resources.ResourceLocation
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.fml.common.Mod
 import net.neoforged.neoforge.event.server.ServerStartingEvent
-import net.neoforged.neoforge.registries.DeferredRegister
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
-import org.jetbrains.annotations.Contract
 import thedarkcolour.kotlinforforge.neoforge.forge.LOADING_CONTEXT
 import thedarkcolour.kotlinforforge.neoforge.forge.MOD_BUS
+import architecture.imaginarycraft.core.ImaginaryCraftConstants
 
-@Mod(ImaginaryCraft.ID)
+@Mod(ImaginaryCraftConstants.ID)
 @EventBusSubscriber
 object ImaginaryCraft {
-	const val ID: String = "imaginarycraft"
-	const val NAME: String = "ImaginaryCraft"
-
-	@JvmField
-	val LOGGER: Logger = LogManager.getLogger(ID)
+	@SubscribeEvent
+	fun onServerStarting(event: ServerStartingEvent) {
+		LOGGER.info("HELLO from server starting")
+	}
 
 	init {
 		val modContainer = LOADING_CONTEXT.activeContainer
 		val modBus = MOD_BUS
 
 		IcSoundEvents.REGISTRY.register(modBus)
-		IcModItems.REGISTRY.register(modBus)
-	}
-
-	@SubscribeEvent
-	fun onServerStarting(event: ServerStartingEvent) {
-		LOGGER.info("HELLO from server starting")
-	}
-
-	@JvmStatic
-	@Contract("_ -> new")
-	fun modRl(name: String): ResourceLocation {
-		return rlOf(ID, name)
-	}
-
-	@JvmStatic
-	@Contract(pure = true)
-	fun modRlText(name: String): String {
-		return "$ID:$name"
-	}
-
-	@JvmStatic
-	fun <T> modRegister(registry: Registry<T>): DeferredRegister<T> {
-		return DeferredRegister.create<T>(registry, ID)
-	}
-
-	@JvmStatic
-	fun <T> modRegister(registry: ResourceKey<Registry<T>>): DeferredRegister<T> {
-		return DeferredRegister.create<T>(registry, ID)
+		IcItems.REGISTRY.register(modBus)
 	}
 }

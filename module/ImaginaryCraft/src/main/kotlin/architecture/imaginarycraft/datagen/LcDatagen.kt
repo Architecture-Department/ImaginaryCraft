@@ -8,11 +8,12 @@ import net.minecraft.core.RegistrySetBuilder
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.data.event.GatherDataEvent
+import architecture.imaginarycraft.core.ImaginaryCraftConstants
 
 /**
  * 数据生成主类
  */
-@EventBusSubscriber(modid = ImaginaryCraft.ID)
+@EventBusSubscriber(modid = ImaginaryCraftConstants.ID)
 object LcDatagen {
 	@SubscribeEvent
 	fun gatherData(event: GatherDataEvent) {

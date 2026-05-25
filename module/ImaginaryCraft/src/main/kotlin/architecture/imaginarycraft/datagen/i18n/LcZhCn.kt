@@ -11,12 +11,13 @@ import net.minecraft.world.item.Item
 import net.neoforged.fml.loading.FMLEnvironment
 import org.jetbrains.annotations.ApiStatus
 import java.util.function.Supplier
+import architecture.imaginarycraft.core.ImaginaryCraftConstants
 
 @ApiStatus.Internal
-class LcZhCn(output: PackOutput) : DatagenI18n(output, ImaginaryCraft.ID, "zh_cn") {
+class LcZhCn(output: PackOutput) : DatagenI18n(output, ImaginaryCraftConstants.ID, "zh_cn") {
 
 	override fun addTranslations() {
-		addPackDescription(ImaginaryCraft.ID, "异想工艺")
+		addPackDescription(ImaginaryCraftConstants.ID, "异想工艺")
 		addItemList(ITEMS)
 		addEntityList(ENTITY)
 		addMobEffectList(MOB_EFFECT)
