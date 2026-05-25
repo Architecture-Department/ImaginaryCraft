@@ -2,7 +2,6 @@
 	"format_version": "1.8.0",
 	"animations": {
 		"player.imaginarycraft.canned_enkephalin": {
-			"loop": "hold_on_last_frame",
 			"animation_length": 5,
 			"bones": {
 				"head": {
