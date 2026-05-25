@@ -1,7 +1,7 @@
 package architecture.imaginarycraft.init
 
 import architecture.ego_equipment.core.EGOEquipmentConstants
-import architecture.ego_equipment.datagen.i18n.ZhCn
+import architecture.imaginarycraft.datagen.i18n.LcZhCn
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceKey
@@ -10,16 +10,16 @@ import net.minecraft.world.item.ItemStack
 import net.neoforged.neoforge.registries.DeferredHolder
 import net.neoforged.neoforge.registries.DeferredRegister
 
-object LcCreativeModeTabs {
+object IcCreativeModeTabs {
 	val REGISTRY: DeferredRegister<CreativeModeTab> =
 		EGOEquipmentConstants.modRegister(BuiltInRegistries.CREATIVE_MODE_TAB)
 
 	val FOOD: DeferredHolder<CreativeModeTab, CreativeModeTab> = register(
-		"food", "异想工艺：食物"
+		"food", "异想工艺 | 食物"
 	) { name, zhCn ->
-		createCreativeModeTab(name, zhCn) { _, output ->
+		createCreativeModeTab(name, zhCn, { _, output ->
 			output.accept(IcItems.CANNED_ENKEPHALIN)
-		}
+		}, { IcItems.CANNED_ENKEPHALIN.get().defaultInstance })
 	}
 
 	private fun register(
@@ -53,7 +53,7 @@ object LcCreativeModeTabs {
 		displayItemsGenerator: CreativeModeTab.DisplayItemsGenerator
 	): CreativeModeTab.Builder {
 		val key = "itemGroup.${EGOEquipmentConstants.ID}.$name"
-		ZhCn.addI18nText(zhCn, key)
+		LcZhCn.addI18nText(zhCn, key)
 		return CreativeModeTab.builder()
 			.title(Component.translatable(key))
 			.displayItems(displayItemsGenerator)

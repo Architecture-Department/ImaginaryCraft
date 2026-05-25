@@ -1,6 +1,6 @@
 package architecture.imaginarycraft.datagen
 
-import architecture.goldenboughs_lib.util.client.DatagenItemModelUtil.withExistingParent
+import architecture.goldenboughs_lib.util.datagen.ItemModelUtil.withExistingParent
 import architecture.imaginarycraft.core.ImaginaryCraftConstants
 import architecture.imaginarycraft.init.IcItems
 import net.minecraft.data.PackOutput
@@ -15,6 +15,6 @@ class ModDatagenItemModel(output: PackOutput, existingFileHelper: ExistingFileHe
 	ItemModelProvider(output, ImaginaryCraftConstants.ID, existingFileHelper) {
 
 	override fun registerModels() {
-		withExistingParent(pathSuffix = "_gui", items = arrayOf(IcItems.CANNED_ENKEPHALIN))
+		withExistingParent("item/food/", "_gui", "gui/", "", IcItems.CANNED_ENKEPHALIN)
 	}
 }

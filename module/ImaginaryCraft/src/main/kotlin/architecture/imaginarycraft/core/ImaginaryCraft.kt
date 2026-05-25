@@ -1,9 +1,9 @@
 package architecture.imaginarycraft.core
 
 import architecture.imaginarycraft.core.ImaginaryCraftConstants.LOGGER
+import architecture.imaginarycraft.init.IcCreativeModeTabs
 import architecture.imaginarycraft.init.IcItems
 import architecture.imaginarycraft.init.IcSoundEvents
-import architecture.imaginarycraft.init.LcCreativeModeTabs
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.fml.common.Mod
@@ -25,6 +25,6 @@ object ImaginaryCraft {
 
 		IcSoundEvents.REGISTRY.register(modBus)
 		IcItems.REGISTRY.register(modBus)
-		LcCreativeModeTabs.REGISTRY.register(modBus)
+		IcCreativeModeTabs.REGISTRY.register(modBus)
 	}
 }

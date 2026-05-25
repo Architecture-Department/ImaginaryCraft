@@ -1,14 +1,13 @@
 package architecture.imaginarycraft.datagen
 
-import architecture.goldenboughs_lib.util.buildClient
-import architecture.goldenboughs_lib.util.buildServer
-import architecture.imaginarycraft.core.ImaginaryCraft
+import architecture.goldenboughs_lib.util.datagen.buildClient
+import architecture.goldenboughs_lib.util.datagen.buildServer
+import architecture.imaginarycraft.core.ImaginaryCraftConstants
 import architecture.imaginarycraft.datagen.i18n.LcZhCn
 import net.minecraft.core.RegistrySetBuilder
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.data.event.GatherDataEvent
-import architecture.imaginarycraft.core.ImaginaryCraftConstants
 
 /**
  * 数据生成主类
