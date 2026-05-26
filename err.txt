@@ -1,0 +1,17 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.2.0/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+Reusing configuration cache.
+> Task :module:ResonatorCombatFramework:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :module:GoldenBoughsLib:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :module:GoldenBoughsLib:copyInterfaceInjectionDataPublications UP-TO-DATE
+> Task :module:GoldenBoughsLib:createMinecraftArtifacts UP-TO-DATE
+> Task :module:ResonatorCombatFramework:createMinecraftArtifacts UP-TO-DATE
+> Task :module:GoldenBoughsLib:kspKotlin UP-TO-DATE
+> Task :module:GoldenBoughsLib:compileKotlin UP-TO-DATE
+> Task :module:GoldenBoughsLib:compileJava UP-TO-DATE
+> Task :module:ResonatorCombatFramework:kspKotlin
+> Task :module:ResonatorCombatFramework:compileKotlin
+
+BUILD SUCCESSFUL in 26s
+8 actionable tasks: 2 executed, 6 up-to-date
+Configuration cache entry reused.

@@ -2,15 +2,6 @@
 	"bones": {
 		"head": {
 			"lock": true
-		},
-		"right_arm": {
-			"lock": true
-		},
-		"right_item": {
-			"lock": true
-		},
-		"left_arm": {
-			"lock": true
 		}
 	}
 }
