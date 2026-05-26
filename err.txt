@@ -4,14 +4,107 @@ Reusing configuration cache.
 > Task :module:ResonatorCombatFramework:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :module:GoldenBoughsLib:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :module:GoldenBoughsLib:copyInterfaceInjectionDataPublications UP-TO-DATE
-> Task :module:GoldenBoughsLib:createMinecraftArtifacts UP-TO-DATE
-> Task :module:ResonatorCombatFramework:createMinecraftArtifacts UP-TO-DATE
-> Task :module:GoldenBoughsLib:kspKotlin UP-TO-DATE
+
+> Task :module:GoldenBoughsLib:createMinecraftArtifacts
+[0;2;3m Deleted 8 outdated lock files
+Loaded 145 artifacts from D:\xm\mod\ArchitectureDepartment\ImaginaryCraft\module\GoldenBoughsLib\build\tmp\createMinecraftArtifacts\nfrt_artifact_manifest.properties
+[1m*** Started working on [4mdownloadJson[0m[0m
+Waiting for lock on downloadJson_5014bdd0ad2a5e976245ebd187d1027b7a1c2dee. [1m[92mDONE [0m Completed [4mdownloadJson[0m in 1.05s
+[1m*** Started working on [4mdownloadClient[0m[0m
+[1m*** Started working on [4mdownloadClientMappings[0m[0m
+[1m*** Started working on [4mdownloadServer[0m[0m
+ [1m[92mDONE [0m Completed [4mdownloadServer[0m in 0.06s
+ [1m[92mDONE [0m Completed [4mdownloadClientMappings[0m in 0.06s
+ [1m[92mDONE [0m Completed [4mdownloadClient[0m in 0.06s
+[1m*** Started working on [4mmergeMappings[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mmergeMappings[0m in 0.01s
+[1m*** Started working on [4mstripClient[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mstripClient[0m in 0.01s
+[1m*** Started working on [4mextractServer[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mextractServer[0m in 0.01s
+[1m*** Started working on [4mstripServer[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mstripServer[0m in 0.01s
+[1m*** Started working on [4mmerge[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mmerge[0m in 0.00s
+[1m*** Started working on [4mrename[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mrename[0m in 0.00s
+[1m*** Started working on [4mdecompile[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mdecompile[0m in 0.00s
+[1m*** Started working on [4minject[0m[0m
+ [1m[92mREUSE[0m Used cache of [4minject[0m in 0.01s
+[1m*** Started working on [4mpatch[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mpatch[0m in 0.00s
+[1m*** Started working on [4mapplyNeoforgePatches[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mapplyNeoforgePatches[0m in 0.00s
+[1m*** Started working on [4mtransformSources[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mtransformSources[0m in 0.01s
+
+> Task :module:ResonatorCombatFramework:createMinecraftArtifacts
+[0;2;3m Deleted 2 outdated lock files
+Loaded 145 artifacts from D:\xm\mod\ArchitectureDepartment\ImaginaryCraft\module\ResonatorCombatFramework\build\tmp\createMinecraftArtifacts\nfrt_artifact_manifest.properties
+[1m*** Started working on [4mdownloadJson[0m[0m
+ [1m[92mDONE [0m Completed [4mdownloadJson[0m in 0.04s
+[1m*** Started working on [4mdownloadServer[0m[0m
+[1m*** Started working on [4mdownloadClient[0m[0m
+[1m*** Started working on [4mdownloadClientMappings[0m[0m
+ [1m[92mDONE [0m Completed [4mdownloadClient[0m in 0.05s
+ [1m[92mDONE [0m Completed [4mdownloadServer[0m in 0.05s
+ [1m[92mDONE [0m Completed [4mdownloadClientMappings[0m in 0.05s
+[1m*** Started working on [4mmergeMappings[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mmergeMappings[0m in 0.01s
+[1m*** Started working on [4mstripClient[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mstripClient[0m in 0.01s
+[1m*** Started working on [4mextractServer[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mextractServer[0m in 0.00s
+[1m*** Started working on [4mstripServer[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mstripServer[0m in 0.01s
+[1m*** Started working on [4mmerge[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mmerge[0m in 0.00s
+[1m*** Started working on [4mrename[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mrename[0m in 0.00s
+[1m*** Started working on [4mdecompile[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mdecompile[0m in 0.00s
+[1m*** Started working on [4minject[0m[0m
+ [1m[92mREUSE[0m Used cache of [4minject[0m in 0.00s
+[1m*** Started working on [4mpatch[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mpatch[0m in 0.00s
+[1m*** Started working on [4mapplyNeoforgePatches[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mapplyNeoforgePatches[0m in 0.00s
+[1m*** Started working on [4mtransformSources[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mtransformSources[0m in 0.00s
+[1m*** Started working on [4mrecompile[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mrecompile[0m in 0.00s
+[1m*** Started working on [4msourcesWithNeoForge[0m[0m
+ [1m[92mREUSE[0m Used cache of [4msourcesWithNeoForge[0m in 0.01s
+[1m*** Started working on [4mcompiledWithNeoForge[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mcompiledWithNeoForge[0m in 0.01s
+[1m*** Started working on [4msourcesAndCompiledWithNeoForge[0m[0m
+ [1m[92mREUSE[0m Used cache of [4msourcesAndCompiledWithNeoForge[0m in 0.00s
+Total runtime: 2.47s
+
+
+> Task :module:GoldenBoughsLib:createMinecraftArtifacts
+[1m*** Started working on [4mrecompile[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mrecompile[0m in 0.01s
+[1m*** Started working on [4msourcesWithNeoForge[0m[0m
+ [1m[92mREUSE[0m Used cache of [4msourcesWithNeoForge[0m in 0.00s
+[1m*** Started working on [4mcompiledWithNeoForge[0m[0m
+ [1m[92mREUSE[0m Used cache of [4mcompiledWithNeoForge[0m in 0.00s
+[1m*** Started working on [4msourcesAndCompiledWithNeoForge[0m[0m
+ [1m[92mREUSE[0m Used cache of [4msourcesAndCompiledWithNeoForge[0m in 0.00s
+Total runtime: 3.46s
+
+
+> Task :module:GoldenBoughsLib:kspKotlin FROM-CACHE
 > Task :module:GoldenBoughsLib:compileKotlin UP-TO-DATE
 > Task :module:GoldenBoughsLib:compileJava UP-TO-DATE
 > Task :module:ResonatorCombatFramework:kspKotlin
-> Task :module:ResonatorCombatFramework:compileKotlin
 
-BUILD SUCCESSFUL in 26s
-8 actionable tasks: 2 executed, 6 up-to-date
+> Task :module:ResonatorCombatFramework:compileKotlin
+w: file:///D:/xm/mod/ArchitectureDepartment/ImaginaryCraft/module/ResonatorCombatFramework/src/main/kotlin/architecture/resonator_combat_framework/module/player_animation/controller/BaseAnimationController.kt:116:61 The corresponding parameter in the supertype 'IAnimationController' is named 'speedMultiplier'. This may cause problems when calling this function with named arguments.
+
+[Incubating] Problems report is available at: file:///D:/xm/mod/ArchitectureDepartment/ImaginaryCraft/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 40s
+8 actionable tasks: 4 executed, 1 from cache, 3 up-to-date
 Configuration cache entry reused.
