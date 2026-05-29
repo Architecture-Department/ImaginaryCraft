@@ -190,6 +190,7 @@ dependencies {
 	ksp "io.github.seggan:kmixin:0.1.2"
 	implementation "net.neoforged:neoforge:${neo_version}"
 	runtimeOnly "org.javassist:javassist:${javassist_version}"
+	annotationProcessor 'org.projectlombok:lombok:1.18.36'
 	implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 	implementation("thedarkcolour:kotlinforforge-neoforge:${kotlinforforge_version}")
 }
@@ -442,3 +443,4 @@ publishing {
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
 }
+
