@@ -62,116 +62,118 @@ GoldenBoughsLib  ←───  ResonatorCombatFramework  ←───  EGOCurios
 - 版本号统一在根 `gradle.properties` 维护
 - 模块特有依赖在各自 `build.gradle` 中通过辅助方法声明
 
+## GoldenBoughsLib 模块结构
+
+GoldenBoughsLib 按领域划分为以下子模块（`module/` 目录下）：
+
+| 模块              | 包路径                    | 内容                                                                                 |
+|-----------------|------------------------|------------------------------------------------------------------------------------|
+| **corpse**      | `module.corpse.*`      | 尸体实体（entity/）和渲染器（renderer/）                                                       |
+| **shield**      | `module.shield.*`      | 护盾系统：状态效果（mobeffect/）、HUD（hud/）、模型（model/）、渲染器（renderer/）                          |
+| **virtue**      | `module.virtue.*`      | 美德系统：API（api/）                                                                     |
+| **rationality** | `module.rationality.*` | 理智系统：事件（event/）、工具（util/）、命令（command/）、物品（item/）、HUD（hud/）                         |
+| **lc_damage**   | `module.lc_damage.*`   | Lc伤害系统：API（api/）、能力（capability/）、属性（attribute/）、粒子（particle/）、工具（util/）、事件（event/） |
+
+**架构约束：**
+
+- 子模块内无 `@SubscribeEvent` / `@EventBusSubscriber` / 自动注册
+- 子模块只暴露普通方法和类，不直接影响 mod
+- 事件/注册由父级目录（`events/`, `init/`）统一调度
+- 子模块通过外部调用的方式被父级代码使用
+
 ## 玩家动画系统（ResonatorCombatFramework）
 
 ### 核心文件
 
-| 文件                                  | 路径               | 职责                                                         |
-|-------------------------------------|------------------|------------------------------------------------------------|
-| BedrockAnimation.kt                 | bedrock/         | 数据模型：BrBoneKeyFrame、BrBoneAnimation、MolangVector3、LerpMode |
-| BedrockAnimator.kt                  | bedrock/         | 实际插值计算                                                     |
-| BedrockAnimationController.kt       | controller/      | 动画控制器实现，驱动 tickBackend 和 animTime                          |
-| BaseAnimationController.kt          | controller/      | 控制器基类：状态机、crossfade、blend、播放边界检查                           |
-| ControllerManager.kt                | controller/      | 控制器管理器：双集合存储，管理插入顺序和骨骼冲突                                   |
-| IAnimationController.kt             | controller/      | 控制器接口：blendFactor、isOverriding、affectedBones 等             |
-| IAnimationMapper.kt                 | api/             | 动画映射器接口：触发/停止/暂停/恢复                                        |
-| EntityAnimationMapper.kt            | mapper/          | 映射器基类：委托 ControllerManager 管理控制器                           |
-| PlayerAnimationMapper.kt            | mapper/          | 玩家映射器：通过 AnimationControllerRegisterEvent 注册控制器            |
-| BedrockAnimationRegistry.kt         | registry/        | 从 JSON 加载动画资源                                              |
-| EasingTypes.kt                      | bedrock/molang/  | 仅保留 LINEAR、STEP、catmullRom                                 |
-| AnimationControllerRegisterEvent.kt | event/           | NeoForge 事件，用于注册控制器到 ControllerManager                     |
-| AnimationControllerRegistry.kt      | events/registry/ | 默认控制器注册（@EventBusSubscriber）                               |
+| 文件                            | 路径              | 职责                                                         |
+|-------------------------------|-----------------|------------------------------------------------------------|
+| BedrockAnimation.kt           | bedrock/        | 数据模型：BrBoneKeyFrame、BrBoneAnimation、MolangVector3、LerpMode |
+| BedrockAnimator.kt            | bedrock/        | 实际插值计算                                                     |
+| BedrockAnimationController.kt | controller/     | 动画控制器实现，负责 time 推进 + Molang 求值                             |
+| BaseAnimationController.kt    | controller/     | 控制器基类：状态机(IDLE/TRANSITIONING/PLAYING/PAUSED/FADING_OUT)、crossfade 过渡、blend 混合、播放边界检查。每个控制器持有自己的 `activeBoneConfig` 和额外的 `boneConfigs` 字段 |
+| ControllerManager.kt          | controller/     | 控制器管理器：Map<ResourceLocation, IAnimationController> O(1) 查找 + List 保持插入顺序。先添加的优先级更高 |
+| IAnimationController.kt       | controller/     | 控制器接口：trigger/stop/pause/resume/tick 生命周期                  |
+| BedrockAnimationRegistry.kt   | registry/       | 从 JSON 加载动画资源                                              |
+| EasingTypes.kt                | bedrock/molang/ | 仅保留 LINEAR、STEP、catmullRom                                 |
 
-### 关键数据模型
+### 映射器与渲染
 
-**BrBoneKeyFrame** 有三个取值方法，使用 fallback 链：
+| 文件                             | 路径     | 职责                     |
+|--------------------------------|--------|------------------------|
+| EntityAnimationMapper.kt       | mapper/ | 抽象映射器：管理 ControllerManager、路由 trigger/stop/pause/resume |
+| PlayerAnimationMapper.kt       | mapper/ | 玩家映射器：init 中通过 NeoForge.EVENT_BUS.post 注册控制器，tickAndRender 逐控制器渲染 |
+| HumanoidEntityAnimationMapper.kt | mapper/ | 人形骨骼映射：proxyModel → HumanoidModel 转换 |
+| LivingEntityAnimationMapper.kt | mapper/ | 生物映射器基类：骨骼标志收集         |
+| AnimationPlayConfig.kt         | config/ | 播放配置 data class：animId/controllerName/animType/startTime/endTime/speedMultiplier 等 |
+| ProxyBoneConfigData.kt         | config/ | 骨骼配置数据：transitionTicks/resolveBoneFlags |
+| IAnimationMapper.kt            | api/    | 映射器接口：trigger/stop/pause/resume/addController |
 
-- `evaluateValue()`: value → post → pre → (0,0,0)
-- `evaluatePre()`: pre → value → post → (0,0,0)
-- `evaluatePost()`: post → value → pre → (0,0,0)
+### 控制器注册
 
-确保对象格式（`{"post": [x,y,z], "lerp_mode": "catmullrom"}`）和简单数组格式（`[x,y,z]`）的关键帧都能正确取值。
+`AnimationControllerRegistry` 定义四个预置控制器，通过 `AnimationControllerRegisterEvent` 注册：
 
-**LerpMode** 嵌套在 BrBoneKeyFrame 内作为枚举：
-- `LINEAR` — 线性插值（prev 用 evaluatePost，next 用 evaluatePre）
-- `CATMULLROM` — 4 点 Catmull-Rom 样条插值
-- `STEP` — 阶梯插值
+| 名称           | Priority | 角色       |
+|--------------|----------|----------|
+| ADDON        | 2000     | 附加层（最高优先级） |
+| DEFAULT      | 1000     | 默认控制器     |
+| LOWER_BODY   | 500      | 下半身控制器    |
+| UPPER_BODY   | 400      | 上半身控制器（最低） |
 
-### 插值逻辑（BedrockAnimator.interpolate）
-
-二分查找前后关键帧 + LINEAR/CATMULLROM/STEP 三种插值模式：
-
-1. **二分查找前后关键帧**: `indexOfFirst { it.time > time }`
-  - `afterIdx < 0` → PAST_END，返回最后一帧
-  - `afterIdx == 0` → BEFORE_START，返回第一帧
-  - 其他 → 正常插值
-
-2. **LINEAR 插值**: `prev.evaluatePost()` → `next.evaluatePre()` 做线性 lerp
-
-3. **CATMULLROM 插值**:
-  - 查找 beforePlus 和 afterPlus 作为曲线控制点
-  - `useFirstPoint = beforePlus != null && !(before.hasPreData && before.hasPostData)`
-  - `useLastPoint = afterPlus != null && !(after.hasPreData && after.hasPostData)`
-  - 用 `lerpSplineCurve()` 做每轴独立的分段 Catmull-Rom 样条求值
-
-4. **权重修正**: `adjWeight = weight + (useFirstPoint ? 1 : 0)`，归一化后传入 lerpSplineCurve
-
-### setXxxEmpty 标记
-
-`computeAndWrite` 中，`setPosEmpty`/`setRotEmpty`/`setScaleEmpty` 决定该通道是否被此动画"参与"：
-- `true` = 此通道无关键帧，不覆盖，保持原值/其他动画的值
-- `false` = 此通道有关键帧，即使最终值全是 0/(1,1,1) 也是主动设置的值
-
-### 循环类型解析
-
-`BedrockAnimationRegistry.parseAnimations` 中 loop 解析支持布尔值和字符串：
-```kotlin
-val loopEl = animDef.get("loop")
-val loop = when {
-    loopEl?.isJsonPrimitive == true && loopEl.asBoolean -> LoopType.LOOP
-    loopEl?.asString == "loop" -> LoopType.LOOP
-    loopEl?.asString == "hold_on_last_frame" -> LoopType.HOLD_ON_LAST
-    else -> LoopType.ONCE
-}
-```
-
-### EasingTypes
-
-只保留 LINEAR、STEP、catmullRom。
+`PlayerAnimationMapper.init {}` 通过 `NeoForge.EVENT_BUS.post(AnimationControllerRegisterEvent())` 获取排序后的条目，直接调用 `controllerManager.add(name, factory(isClient))` 添加。所有控制器（包括 DEFAULT）都在 nameMap + ordered 中。
 
 ### 控制器管理系统
 
-**ControllerManager**（controller/ 包）：
+`ControllerManager` 使用双集合（Map O(1) 查找 + List 保持顺序）管理控制器，支持 `addAfter/addBefore` 灵活插入。先添加的优先级更高。
 
-双集合存储最大化性能：
+**`getRenderable()` 逻辑：** 从高优先级到低优先级遍历活跃控制器。如果一个控制器的所有骨骼都已被更高优先级控制器渲染，且自身没有 `isOverriding` 标志，则跳过。`isOverriding` 允许低优先级控制器覆盖高优先级控制器的活跃骨骼。
 
-```kotlin
-private val nameMap = mutableMapOf<String, IAnimationController>()  // O(1) 名称查找
-private val ordered = mutableListOf<IAnimationController>()         // 保持插入顺序
-```
+### 触发流程
 
-核心方法：
+1. 外部调用 `mapper.trigger(animId)` → 创建 `AnimationPlayConfig(animId, controllerName=DEFAULT)`
+2. `EntityAnimationMapper.trigger(config)` → `controllerManager.get(controllerName) ?? defaultController`
+3. `defaultController` 通过 `controllerManager.get(AnimationControllerRegistry.DEFAULT)` 查找，不命中时 fallback 到 `controllerManager.getDefault()`（第一个添加的控制器）
+4. 设置控制器的 `resolvedBoneConfig` 和 `boneConfigs`（持久覆盖）
+5. `controller.trigger(config)` → `BaseAnimationController.trigger()`
 
-- `add(name, controller)` / `add(index, ...)` / `addAfter(afterName, ...)` / `addBefore(beforeName, ...)` — 灵活插入
-- `get(name)` / `getDefault()` / `getAll()` / `has(name)` — 查询
-- `getSortedActive()` — 按添加顺序返回活跃控制器
-- `getRenderable()` — 遍历可渲染控制器，骨骼被更高优先级控制器占用的跳过
-- `findBlocking(controller)` — 返回排在它前面、isOverriding 且有骨骼冲突的控制器
+### 每帧渲染（逐控制器）
 
-**注册流程**（PlayerAnimationMapper.init）：
-
-1. NeoForge.EVENT_BUS 触发 AnimationControllerRegisterEvent
-2. AnimationControllerRegistry 监听到事件，注册默认 BedrockAnimationController
-3. getSortedEntries() 按 order 升序返回，依次添加到 ControllerManager
-4. 先添加的控制器优先级更高（排在前面）
-
-**自定义控制器注册**（其他模块）：
+`PlayerAnimationMapper.tickAndRender()` 被 `LivingEntityRendererMixin` 调用：
 
 ```kotlin
-@SubscribeEvent
-fun onRegisterControllers(event: AnimationControllerRegisterEvent) {
-  event.register("my_controller", { MyController(it) }, order = 500)
+tick(tickSec, deltaSec)
+for (ctrl in controllerManager.getRenderable()) {
+    val bac = ctrl as BaseAnimationController
+    val flags = bac.resolveBoneFlags(bac.currentAnimTime)  // 合并 activeBoneConfig + boneConfigs
+    val weight = ctrl.effectiveWeight
+    applyRootTransform(listOf(bac.proxyModel), poseStack, flags, weight)
+    applyProxyToModel(listOf(bac.proxyModel), model, flags, weight)
 }
 ```
 
-**骨骼冲突**：getRenderable() 中，后添加的控制器如果骨骼已被前面且 isOverriding 的控制器占用，则整个跳过。
+每个控制器用自己的权重和骨骼标志独立渲染，高优先级先渲染，低优先级后渲染可覆盖。
+
+### 骨骼配置管理
+
+- **`activeBoneConfig`**（private）：每个控制器自己的活跃骨骼配置，trigger 时设置，forceClear 时清除
+- **`boneConfigs`**（var, nullable）：额外骨骼配置，优先级高于 activeBoneConfig，只覆盖已存在的骨骼。通常 null，由 EntityAnimationMapper.trigger 设置
+- **`resolvedBoneConfig`**（internal, nullable）：trigger 时临时覆盖，设完后在 trigger() 内立即消费
+
+### 状态机
+
+`BaseAnimationController.State`：
+- IDLE → trigger() → TRANSITIONING → blendFactor=1 → PLAYING
+- PLAYING → checkPlaybackBounds → FADING_OUT → blendFactor=0 → IDLE
+- PLAYING/TRANSITIONING → pause() → PAUSED → resume() → TRANSITIONING/PLAYING
+
+### 循环类型解析
+
+`"loop": true`（布尔值）和 `"loop": "loop"`（字符串）均支持。
+
+### AnimType（覆盖动画自身 loop 的设置）
+
+| 类型            | 行为                    |
+|---------------|-----------------------|
+| DEFAULT       | 使用动画自身的 loop 类型       |
+| PLAY_ONCE     | 播放一次后淡出               |
+| STOP_AT_LAST  | 播放一次，停止于最后一帧（保持姿态不淡出） |
+| LOOP          | 强制循环播放                |

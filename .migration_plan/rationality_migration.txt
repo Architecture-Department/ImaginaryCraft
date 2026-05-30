@@ -1,0 +1,8 @@
+理智模块迁移记录
+Moved: module.virtue.event -> module.rationality.event : module\virtue\event\RationalityEvent.kt
+Moved: module.virtue.event -> module.rationality.event : module\virtue\event\RationalityEventExecutes.kt
+Moved: module.virtue.util -> module.rationality.util : module\virtue\util\RationalityUtil.kt
+Moved: module.virtue.command -> module.rationality.command : module\virtue\command\RationalityDataCommands.kt
+Moved: module.virtue.item -> module.rationality.item : module\virtue\item\CreativeRationalityToolItem.kt
+Moved: client.gui.hudlayers -> module.rationality.hud : client\gui\hudlayers\RationalityBarLayer.kt
+Moved: client.gui.hudlayers.screenfilter -> module.rationality.hud : client\gui\hudlayers\screenfilter\RationalityScreenFilterLayer.kt
