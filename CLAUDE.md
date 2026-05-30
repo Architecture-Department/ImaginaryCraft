@@ -1,4 +1,4 @@
-﻿# ImaginaryCraft 项目
+# ImaginaryCraft 项目
 
 NeoForge 1.21.1 模组项目，采用多模块 Gradle 架构。
 
@@ -66,14 +66,21 @@ GoldenBoughsLib  ←───  ResonatorCombatFramework  ←───  EGOCurios
 
 ### 核心文件
 
-| 文件                            | 路径              | 职责                                                         |
-|-------------------------------|-----------------|------------------------------------------------------------|
-| BedrockAnimation.kt           | bedrock/        | 数据模型：BrBoneKeyFrame、BrBoneAnimation、MolangVector3、LerpMode |
-| BedrockAnimator.kt            | bedrock/        | 实际插值计算，匹配 eyelib 风格                                        |
-| BedrockAnimationController.kt | controller/     | 动画控制器实现，驱动 tickBackend 和 animTime                          |
-| BaseAnimationController.kt    | controller/     | 控制器基类：状态机、crossfade、blend、播放边界检查                           |
-| BedrockAnimationRegistry.kt   | registry/       | 从 JSON 加载动画资源                                              |
-| EasingTypes.kt                | bedrock/molang/ | 仅保留 LINEAR、STEP、catmullRom                                 |
+| 文件                                  | 路径               | 职责                                                         |
+|-------------------------------------|------------------|------------------------------------------------------------|
+| BedrockAnimation.kt                 | bedrock/         | 数据模型：BrBoneKeyFrame、BrBoneAnimation、MolangVector3、LerpMode |
+| BedrockAnimator.kt                  | bedrock/         | 实际插值计算                                                     |
+| BedrockAnimationController.kt       | controller/      | 动画控制器实现，驱动 tickBackend 和 animTime                          |
+| BaseAnimationController.kt          | controller/      | 控制器基类：状态机、crossfade、blend、播放边界检查                           |
+| ControllerManager.kt                | controller/      | 控制器管理器：双集合存储，管理插入顺序和骨骼冲突                                   |
+| IAnimationController.kt             | controller/      | 控制器接口：blendFactor、isOverriding、affectedBones 等             |
+| IAnimationMapper.kt                 | api/             | 动画映射器接口：触发/停止/暂停/恢复                                        |
+| EntityAnimationMapper.kt            | mapper/          | 映射器基类：委托 ControllerManager 管理控制器                           |
+| PlayerAnimationMapper.kt            | mapper/          | 玩家映射器：通过 AnimationControllerRegisterEvent 注册控制器            |
+| BedrockAnimationRegistry.kt         | registry/        | 从 JSON 加载动画资源                                              |
+| EasingTypes.kt                      | bedrock/molang/  | 仅保留 LINEAR、STEP、catmullRom                                 |
+| AnimationControllerRegisterEvent.kt | event/           | NeoForge 事件，用于注册控制器到 ControllerManager                     |
+| AnimationControllerRegistry.kt      | events/registry/ | 默认控制器注册（@EventBusSubscriber）                               |
 
 ### 关键数据模型
 
@@ -83,48 +90,41 @@ GoldenBoughsLib  ←───  ResonatorCombatFramework  ←───  EGOCurios
 - `evaluatePre()`: pre → value → post → (0,0,0)
 - `evaluatePost()`: post → value → pre → (0,0,0)
 
-这确保对象格式（`{"post": [x,y,z], "lerp_mode": "catmullrom"}`）和简单数组格式（`[x,y,z]`）的关键帧都能正确取值。旧代码中
-`evaluateValue()` 只读 `value` 字段，导致 post-only 关键帧错误返回 (0,0,0)。
+确保对象格式（`{"post": [x,y,z], "lerp_mode": "catmullrom"}`）和简单数组格式（`[x,y,z]`）的关键帧都能正确取值。
 
 **LerpMode** 嵌套在 BrBoneKeyFrame 内作为枚举：
-
 - `LINEAR` — 线性插值（prev 用 evaluatePost，next 用 evaluatePre）
 - `CATMULLROM` — 4 点 Catmull-Rom 样条插值
 - `STEP` — 阶梯插值
 
 ### 插值逻辑（BedrockAnimator.interpolate）
 
-参考 eyelib 的 `BrBoneAnimation.lerp` 实现：
+二分查找前后关键帧 + LINEAR/CATMULLROM/STEP 三种插值模式：
 
 1. **二分查找前后关键帧**: `indexOfFirst { it.time > time }`
-
-- `afterIdx < 0` → PAST_END，返回最后一帧
-- `afterIdx == 0` → BEFORE_START，返回第一帧
-- 其他 → 正常插值
+  - `afterIdx < 0` → PAST_END，返回最后一帧
+  - `afterIdx == 0` → BEFORE_START，返回第一帧
+  - 其他 → 正常插值
 
 2. **LINEAR 插值**: `prev.evaluatePost()` → `next.evaluatePre()` 做线性 lerp
 
 3. **CATMULLROM 插值**:
-
-- 查找 beforePlus 和 afterPlus 作为曲线控制点
-- `useFirstPoint = beforePlus != null && !(before.hasPreData && before.hasPostData)` — 当 before 有完整 pre+post
-  控制点时，不扩展 beforePlus
-- `useLastPoint = afterPlus != null && !(after.hasPreData && after.hasPostData)` — 同理
-- 用 `lerpSplineCurve()` 做每轴独立的分段 Catmull-Rom 样条求值
+  - 查找 beforePlus 和 afterPlus 作为曲线控制点
+  - `useFirstPoint = beforePlus != null && !(before.hasPreData && before.hasPostData)`
+  - `useLastPoint = afterPlus != null && !(after.hasPreData && after.hasPostData)`
+  - 用 `lerpSplineCurve()` 做每轴独立的分段 Catmull-Rom 样条求值
 
 4. **权重修正**: `adjWeight = weight + (useFirstPoint ? 1 : 0)`，归一化后传入 lerpSplineCurve
 
 ### setXxxEmpty 标记
 
 `computeAndWrite` 中，`setPosEmpty`/`setRotEmpty`/`setScaleEmpty` 决定该通道是否被此动画"参与"：
-
 - `true` = 此通道无关键帧，不覆盖，保持原值/其他动画的值
 - `false` = 此通道有关键帧，即使最终值全是 0/(1,1,1) 也是主动设置的值
 
 ### 循环类型解析
 
-`BedrockAnimationRegistry.parseAnimations` 中 loop 解析：
-
+`BedrockAnimationRegistry.parseAnimations` 中 loop 解析支持布尔值和字符串：
 ```kotlin
 val loopEl = animDef.get("loop")
 val loop = when {
@@ -135,12 +135,43 @@ val loop = when {
 }
 ```
 
-同时支持 Bedrock 格式的布尔值 `"loop": true` 和字符串 `"loop": "loop"`。
-
 ### EasingTypes
 
-精简后的 EasingTypes 只保留：
+只保留 LINEAR、STEP、catmullRom。
 
-- `LINEAR: EasingFunc` — `t → t`
-- `STEP: EasingFunc` — `t < 1 ? 0 : 1`
-- `catmullRom(t, p0, p1, p2, p3): Double` — 标准 Catmull-Rom 公式
+### 控制器管理系统
+
+**ControllerManager**（controller/ 包）：
+
+双集合存储最大化性能：
+
+```kotlin
+private val nameMap = mutableMapOf<String, IAnimationController>()  // O(1) 名称查找
+private val ordered = mutableListOf<IAnimationController>()         // 保持插入顺序
+```
+
+核心方法：
+
+- `add(name, controller)` / `add(index, ...)` / `addAfter(afterName, ...)` / `addBefore(beforeName, ...)` — 灵活插入
+- `get(name)` / `getDefault()` / `getAll()` / `has(name)` — 查询
+- `getSortedActive()` — 按添加顺序返回活跃控制器
+- `getRenderable()` — 遍历可渲染控制器，骨骼被更高优先级控制器占用的跳过
+- `findBlocking(controller)` — 返回排在它前面、isOverriding 且有骨骼冲突的控制器
+
+**注册流程**（PlayerAnimationMapper.init）：
+
+1. NeoForge.EVENT_BUS 触发 AnimationControllerRegisterEvent
+2. AnimationControllerRegistry 监听到事件，注册默认 BedrockAnimationController
+3. getSortedEntries() 按 order 升序返回，依次添加到 ControllerManager
+4. 先添加的控制器优先级更高（排在前面）
+
+**自定义控制器注册**（其他模块）：
+
+```kotlin
+@SubscribeEvent
+fun onRegisterControllers(event: AnimationControllerRegisterEvent) {
+  event.register("my_controller", { MyController(it) }, order = 500)
+}
+```
+
+**骨骼冲突**：getRenderable() 中，后添加的控制器如果骨骼已被前面且 isOverriding 的控制器占用，则整个跳过。
