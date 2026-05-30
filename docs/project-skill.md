@@ -1,4 +1,4 @@
-﻿# ImaginaryCraft 项目技能
+# ImaginaryCraft 项目技能
 
 这是一个完整的项目记忆/技能文档，记录了 ImaginaryCraft 项目的结构、架构模式、重要 API 和代码规范。用于快速恢复项目上下文。
 
@@ -13,7 +13,6 @@
 - **NeoForge**: 21.1.230
 - **Kotlin**: 2.2.20 (KotlinForForge 5.11.0)
 - **GeckoLib**: 4.8.4
-- **eyelib**: 21.1.14
 - **Curios API**: 9.5.1+1.21.1
 - **Kotlin 编译器插件**: kotlin.plugin.allopen, kotlin.plugin.serialization, ksp (+ kmixin 0.1.2)
 
@@ -58,7 +57,6 @@ GoldenBoughsLib  ←───  ResonatorCombatFramework  ←───  EGOCurios
 dependencies {
     addModuleDeps('GoldenBoughsLib', 'ResonatorCombatFramework')  // 模块间依赖
     addMixinSquared()       // MixinSquared 编译/内嵌
-    addEyelib()             // eyelib 玩家动画
     addJade()               // Jade 高亮显示
     addJEI()                // JEI 配方查看
     addCurios()             // Curios API 饰品栏
@@ -226,7 +224,6 @@ ModHurtByTargetGoal, CampHurtByTargetGoal, ModMeleeAttackGoal, DashComponent
 - AnimationController — 抽象动画控制器
 - IAnimationMapper / PlayerAnimationMapper — 动画映射
 - ProxyModel / ProxyBoneState — 代理骨骼模型
-- eyelib 控制器: EyeLibAnimationController / EyelibBoneController / EyelibItemController
 - RcfFirstPersonRender — 第一人称渲染
 
 ---
@@ -350,3 +347,6 @@ architecture.<module_id>/
 | TextUtil         | GoldenBoughsLib | 文本工具        |
 | GeckoLibUtil     | GoldenBoughsLib | GeckoLib 工具 |
 | PayloadUtil      | GoldenBoughsLib | 网络包工具       |
+
+
+
