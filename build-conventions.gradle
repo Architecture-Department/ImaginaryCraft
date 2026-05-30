@@ -333,15 +333,15 @@ neoForge {
 		data {
 			data()
 			programArguments.addAll '--mod', project.mod_id, '--all', '--output',
-					file('src/generated/resources/').getAbsolutePath(), '--existing',
-					file('src/main/resources/').getAbsolutePath()
+							file('src/generated/resources/').getAbsolutePath(), '--existing',
+							file('src/main/resources/').getAbsolutePath()
 		}
 		configureEach {
 			systemProperty 'forge.logging.markers', 'REGISTRIES'
 			systemProperty 'forge.logging.console.level', 'debug'
 			jvmArguments.addAll([
-					"-XX:+IgnoreUnrecognizedVMOptions",
-					"-XX:+AllowEnhancedClassRedefinition"
+							"-XX:+IgnoreUnrecognizedVMOptions",
+							"-XX:+AllowEnhancedClassRedefinition"
 			])
 			logLevel = org.slf4j.event.Level.DEBUG
 		}
@@ -379,21 +379,21 @@ def generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 	dependsOn mergeModsTemplate
 
 	def replaceProperties = [
-			minecraft_version      : minecraft_version,
-			minecraft_version_range: minecraft_version_range,
-			neo_version            : neo_version,
-			loader_version_range   : loader_version_range,
-			mod_id                 : mod_id,
-			mod_name               : mod_name,
-			mod_license            : mod_license,
-			mod_version            : mod_version,
-			mod_authors            : mod_authors,
-			mod_description        : mod_description,
-			// 其他属性
-			eyelib_version         : eyelib_version,
-			kotlinforforge_version : kotlinforforge_version,
-			geckolib_version       : geckolib_version,
-			curios_api_version     : curios_api_version,
+					minecraft_version      : minecraft_version,
+					minecraft_version_range: minecraft_version_range,
+					neo_version            : neo_version,
+					loader_version_range   : loader_version_range,
+					mod_id                 : mod_id,
+					mod_name               : mod_name,
+					mod_license            : mod_license,
+					mod_version            : mod_version,
+					mod_authors            : mod_authors,
+					mod_description        : mod_description,
+					// 其他属性
+					eyelib_version         : eyelib_version,
+					kotlinforforge_version : kotlinforforge_version,
+					geckolib_version       : geckolib_version,
+					curios_api_version     : curios_api_version,
 	]
 	inputs.properties replaceProperties
 	expand replaceProperties

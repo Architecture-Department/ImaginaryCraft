@@ -2,13 +2,12 @@ package architecture.imaginarycraft.init
 
 import architecture.goldenboughs_lib.common.item.FoodItem
 import architecture.goldenboughs_lib.util.FoodPropertiesBuilder
-import architecture.imaginarycraft.core.ImaginaryCraft
+import architecture.imaginarycraft.core.ImaginaryCraftConstants
 import architecture.imaginarycraft.datagen.i18n.LcZhCn
 import net.minecraft.world.item.Item
 import net.neoforged.neoforge.registries.DeferredItem
 import net.neoforged.neoforge.registries.DeferredRegister
 import java.util.function.Function
-import architecture.imaginarycraft.core.ImaginaryCraftConstants
 
 object IcItems {
 	@JvmField
@@ -16,7 +15,8 @@ object IcItems {
 
 	@JvmField
 	val CANNED_ENKEPHALIN = registerFood(
-		"canned_enkephalin", "罐装脑啡肽", foodPropertiesBuilder = FoodPropertiesBuilder()
+		"canned_enkephalin", "罐装脑啡肽", false,
+		foodPropertiesBuilder = FoodPropertiesBuilder()
 			.eatSeconds(84)
 			.alwaysEdible()
 	)

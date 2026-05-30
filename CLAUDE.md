@@ -97,18 +97,20 @@ GoldenBoughsLib  ←───  ResonatorCombatFramework  ←───  EGOCurios
 参考 eyelib 的 `BrBoneAnimation.lerp` 实现：
 
 1. **二分查找前后关键帧**: `indexOfFirst { it.time > time }`
-  - `afterIdx < 0` → PAST_END，返回最后一帧
-  - `afterIdx == 0` → BEFORE_START，返回第一帧
-  - 其他 → 正常插值
+
+- `afterIdx < 0` → PAST_END，返回最后一帧
+- `afterIdx == 0` → BEFORE_START，返回第一帧
+- 其他 → 正常插值
 
 2. **LINEAR 插值**: `prev.evaluatePost()` → `next.evaluatePre()` 做线性 lerp
 
 3. **CATMULLROM 插值**:
-  - 查找 beforePlus 和 afterPlus 作为曲线控制点
-  - `useFirstPoint = beforePlus != null && !(before.hasPreData && before.hasPostData)` — 当 before 有完整 pre+post
-    控制点时，不扩展 beforePlus
-  - `useLastPoint = afterPlus != null && !(after.hasPreData && after.hasPostData)` — 同理
-  - 用 `lerpSplineCurve()` 做每轴独立的分段 Catmull-Rom 样条求值
+
+- 查找 beforePlus 和 afterPlus 作为曲线控制点
+- `useFirstPoint = beforePlus != null && !(before.hasPreData && before.hasPostData)` — 当 before 有完整 pre+post
+  控制点时，不扩展 beforePlus
+- `useLastPoint = afterPlus != null && !(after.hasPreData && after.hasPostData)` — 同理
+- 用 `lerpSplineCurve()` 做每轴独立的分段 Catmull-Rom 样条求值
 
 4. **权重修正**: `adjWeight = weight + (useFirstPoint ? 1 : 0)`，归一化后传入 lerpSplineCurve
 

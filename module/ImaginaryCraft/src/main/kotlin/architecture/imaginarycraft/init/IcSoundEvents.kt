@@ -1,12 +1,11 @@
 package architecture.imaginarycraft.init
 
-import architecture.imaginarycraft.core.ImaginaryCraft
+import architecture.imaginarycraft.core.ImaginaryCraftConstants
 import architecture.imaginarycraft.datagen.i18n.LcZhCn
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.sounds.SoundEvent
 import net.neoforged.neoforge.registries.DeferredHolder
 import net.neoforged.neoforge.registries.DeferredRegister
-import architecture.imaginarycraft.core.ImaginaryCraftConstants
 
 object IcSoundEvents {
 	val REGISTRY: DeferredRegister<SoundEvent> = ImaginaryCraftConstants.modRegister(BuiltInRegistries.SOUND_EVENT)

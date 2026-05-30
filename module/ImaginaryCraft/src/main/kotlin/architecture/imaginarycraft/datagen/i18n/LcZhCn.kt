@@ -1,7 +1,7 @@
 package architecture.imaginarycraft.datagen.i18n
 
 import architecture.goldenboughs_lib.datagen.i18n.DatagenI18n
-import architecture.imaginarycraft.core.ImaginaryCraft
+import architecture.imaginarycraft.core.ImaginaryCraftConstants
 import net.minecraft.data.PackOutput
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.effect.MobEffect
@@ -11,7 +11,6 @@ import net.minecraft.world.item.Item
 import net.neoforged.fml.loading.FMLEnvironment
 import org.jetbrains.annotations.ApiStatus
 import java.util.function.Supplier
-import architecture.imaginarycraft.core.ImaginaryCraftConstants
 
 @ApiStatus.Internal
 class LcZhCn(output: PackOutput) : DatagenI18n(output, ImaginaryCraftConstants.ID, "zh_cn") {

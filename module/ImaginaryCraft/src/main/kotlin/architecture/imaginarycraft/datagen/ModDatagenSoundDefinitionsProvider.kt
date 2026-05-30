@@ -1,13 +1,12 @@
 package architecture.imaginarycraft.datagen
 
-import architecture.imaginarycraft.core.ImaginaryCraft
+import architecture.imaginarycraft.core.ImaginaryCraftConstants
 import net.minecraft.data.PackOutput
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundEvent
 import net.neoforged.neoforge.common.data.ExistingFileHelper
 import net.neoforged.neoforge.common.data.SoundDefinition
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider
-import architecture.imaginarycraft.core.ImaginaryCraftConstants
 
 open class ModDatagenSoundDefinitionsProvider(output: PackOutput, existingFileHelper: ExistingFileHelper) :
 	SoundDefinitionsProvider(output, ImaginaryCraftConstants.ID, existingFileHelper) {

@@ -1,6 +1,6 @@
 package architecture.imaginarycraft.datagen
 
-import architecture.imaginarycraft.core.ImaginaryCraft
+import architecture.imaginarycraft.core.ImaginaryCraftConstants
 import net.minecraft.core.particles.ParticleType
 import net.minecraft.data.PackOutput
 import net.minecraft.resources.ResourceLocation
@@ -9,7 +9,6 @@ import net.neoforged.neoforge.common.data.ParticleDescriptionProvider
 import java.util.*
 import java.util.function.Supplier
 import java.util.stream.Collectors
-import architecture.imaginarycraft.core.ImaginaryCraftConstants
 
 class ModDatagenParticle(output: PackOutput, fileHelper: ExistingFileHelper) :
 	ParticleDescriptionProvider(output, fileHelper) {
