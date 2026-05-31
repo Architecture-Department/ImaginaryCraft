@@ -2,6 +2,9 @@
 	"bones": {
 		"head": {
 			"lock": true
+		},
+		"right_item": {
+			"transition": false
 		}
 	}
 }
