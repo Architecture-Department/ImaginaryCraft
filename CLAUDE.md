@@ -35,7 +35,7 @@ GoldenBoughsLib  ←───  ResonatorCombatFramework  ←───  EGOCurios
 ## 构建约定
 
 - **`build-conventions.gradle`** 提供所有模块公共配置
-- 模块 `build.gradle` 通过 `ext` 辅助方法声明依赖：`addModuleDeps(...)`, `addJEI()`, `addMixinSquared()`, `addEyelib()`,
+- 模块 `build.gradle` 通过 `ext` 辅助方法声明依赖：`addModuleDeps(...)`, `addJEI()`, `addMixinSquared()`,
   `addCurios()` 等
 - `neoforge.mods.toml` 由 `templates/mods-base.toml`（公共头部+neo/mc依赖）与模块模板合并生成
 - 新建模块：`./create_module.sh <ModName> <mod_id> "显示名" <group>`
@@ -177,3 +177,5 @@ for (ctrl in controllerManager.getRenderable()) {
 | PLAY_ONCE     | 播放一次后淡出               |
 | STOP_AT_LAST  | 播放一次，停止于最后一帧（保持姿态不淡出） |
 | LOOP          | 强制循环播放                |
+
+

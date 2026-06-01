@@ -144,7 +144,6 @@ git submodule update
 | `addJarJarModuleDeps(...)` | jarJar 嵌入上游模块           |
 | `addMixinSquared()`        | MixinSquared 支持         |
 | `addJEI()`                 | JEI 配方查看                |
-| `addEyelib()`              | 动画引擎                    |
 | `addJade()`                | Jade 信息显示               |
 | `addCurios()`              | Curios API 饰品栏          |
 | `addDummyMobs()`           | 试验假人                    |
@@ -160,7 +159,6 @@ apply from: rootProject.file('build-conventions.gradle')
 dependencies {
   addModuleDeps('GoldenBoughsLib', 'ResonatorCombatFramework')
   addMixinSquared()
-  addEyelib()
   addJade()
   addJEI()
   addDummyMobs()
@@ -196,3 +194,4 @@ side = "BOTH"
 ./gradlew :module:ImaginaryCraft:runData         # 数据生成
 ./gradlew build                                   # 构建全部
 ```
+

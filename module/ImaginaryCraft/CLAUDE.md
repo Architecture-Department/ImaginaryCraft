@@ -67,5 +67,6 @@ ImaginaryCraft.jar
 ## 上游依赖
 
 - 所有 5 个子模块（jarJar）
-- Curios API, JEI, Jade, Eyelib（可选）
+- Curios API, JEI, Jade, （可选）
 - `../../额外资源/mods` 目录的 JAR（fileTree）
+
