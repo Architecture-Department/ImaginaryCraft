@@ -112,12 +112,12 @@ GoldenBoughsLib 按领域划分为以下子模块（`module/` 目录下）：
 
 `AnimationControllerRegistry` 定义四个预置控制器，通过 `AnimationControllerRegisterEvent` 注册：
 
-| 名称           | Priority | 角色       |
-|--------------|----------|----------|
-| ADDON        | 2000     | 附加层（最高优先级） |
-| DEFAULT      | 1000     | 默认控制器     |
-| LOWER_BODY   | 500      | 下半身控制器    |
-| UPPER_BODY   | 400      | 上半身控制器（最低） |
+| 名称         | Priority | 角色         |
+|------------|----------|------------|
+| ADDON      | 2000     | 附加层（最高优先级） |
+| DEFAULT    | 1000     | 主控制器       |
+| LOWER_BODY | 500      | 下半身控制器     |
+| UPPER_BODY | 400      | 上半身控制器（最低） |
 
 `PlayerAnimationMapper.init {}` 通过 `NeoForge.EVENT_BUS.post(AnimationControllerRegisterEvent())` 获取排序后的条目，直接调用 `controllerManager.add(name, factory(isClient))` 添加。所有控制器（包括 DEFAULT）都在 nameMap + ordered 中。
 
