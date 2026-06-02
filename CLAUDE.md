@@ -182,6 +182,37 @@ for (ctrl in controllerManager.getRenderable()) {
 | STOP_AT_LAST | 播放一次，停止于最后一帧（保持姿态不淡出） |
 | LOOP         | 强制循环播放                |
 
+## 操作规则
 
+### 文件删除规则
 
+删除任何文件或目录之前：
 
+1. 列出要删除的内容
+2. 检查项目内所有引用
+3. 先将文件移动到新位置（不应立即删除）
+4. 编译验证通过后，再执行删除
+
+### 命名约定
+
+- **mixed/**（不是 mixin/）：Mixin 接口扩展（如 IPlayerRcf），与 Java Mixin 类路径 mixin/ 区分
+
+### 文件写入规则
+
+使用 PowerShell Set-Content 时会自动追加一个尾部换行。写入前必须去掉尾部换行防止多出空行：
+
+```powershell
+$content = $content.TrimEnd("`r", "`n")
+Set-Content $file -Value $content -Encoding UTF8
+```
+
+### 文件修改备份规则
+
+在修改重要文件之前，先将原始文件复制到 `.migration_plan/` 目录下的对应路径中，方便恢复：
+
+```powershell
+# 例如修改 EntityAnimationMapper.kt 前：
+Copy-Item "path/to/EntityAnimationMapper.kt" ".migration_plan/path/to/EntityAnimationMapper.kt.bak"
+```
+
+`.migration_plan/` 目录结构镜像项目源码结构，备份文件后缀为 `.bak`。修改完成并编译通过后，可清理不再需要的备份。

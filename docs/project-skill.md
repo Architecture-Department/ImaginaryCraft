@@ -21,7 +21,7 @@
 | 模块                       | mod_id                     | 说明                          |
 |--------------------------|----------------------------|-----------------------------|
 | GoldenBoughsLib          | goldenboughs_lib           | 核心库 — 伤害系统/属性/美德/行为树/HUD/渲染 |
-| ResonatorCombatFramework | resonator_combat_framework | 战斗框架 — 玩家动画/装备渲染            |
+| ResonatorCombatFramework | resonator_combat_framework | 战斗框架 — 实体动画/装备渲染            |
 | EGOCurios                | ego_curios                 | 饰品模组 — ~50 E.G.O.饰品，15槽位    |
 | EGOEquipment             | ego_equipment              | 装备模组 — ~110武器 + ~30护甲套装     |
 | Abnormalities            | abnormalities              | 异想体模组                       |
