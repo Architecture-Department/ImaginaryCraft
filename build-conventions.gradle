@@ -274,11 +274,6 @@ ext.addMixinSquaredRuntime = {
 	dependencies.runtimeOnly(dependencies.annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-common:${mixinsquared_version}"))
 	dependencies.implementation(dependencies.jarJar("com.github.bawnorton.mixinsquared:mixinsquared-neoforge:${mixinsquared_version}"))
 }
-
-// 可选依赖快捷方法
-ext.addEyelib = {
-	dependencies.implementation "maven.modrinth:eyelib:${eyelib_api_version}"
-}
 ext.addJade = {
 	dependencies.implementation "maven.modrinth:jade:${jade_version}+neoforge"
 }
@@ -389,8 +384,6 @@ def generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 					mod_version            : mod_version,
 					mod_authors            : mod_authors,
 					mod_description        : mod_description,
-					// 其他属性
-					eyelib_version         : eyelib_version,
 					kotlinforforge_version : kotlinforforge_version,
 					geckolib_version       : geckolib_version,
 					curios_api_version     : curios_api_version,

@@ -100,7 +100,6 @@ dependencies {
     // addModuleDeps('GoldenBoughsLib', 'ResonatorCombatFramework')
 
     // 可选依赖（按需取消注释）
-    // addEyelib()
     // addJade()
     // addJEI()
     // addMixinSquared()

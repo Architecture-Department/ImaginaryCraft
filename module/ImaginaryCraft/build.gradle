@@ -12,7 +12,6 @@ dependencies {
 	addJade()
 	addJEI()
 	addDummyMobs()
-	addEyelib()
 	addLocalLibs()
 
 	implementation files(fileTree(dir: "../../额外资源/mods", include: ["*.jar"]))
