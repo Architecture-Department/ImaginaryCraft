@@ -1,30 +1,74 @@
 package architecture.imaginarycraft.events
 
-import architecture.resonator_combat_framework.core.RcfConstants
+import architecture.imaginarycraft.core.ImaginaryCraftConstants
+import architecture.imaginarycraft.init.IcItems
+import architecture.resonator_combat_framework.events.registry.AnimationControllers
+import architecture.resonator_combat_framework.module.entity_animation.data.AnimationPlayData
+import architecture.resonator_combat_framework.module.entity_animation.mixed.PlayerProxyProvider.Companion.getAnimationTransformer
 import net.minecraft.world.entity.player.Player
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent
 
-@EventBusSubscriber(modid = RcfConstants.ID)
+@EventBusSubscriber(modid = ImaginaryCraftConstants.ID)
 object PlayerEvents {
-	@SubscribeEvent
-	fun onUseItemFinish(event: LivingEntityUseItemEvent.Finish) {
-		if (event.entity !is Player) return
-	}
-
+	/**
+	 * 开始使用物品
+	 */
 	@SubscribeEvent
 	fun onUseItemStart(event: LivingEntityUseItemEvent.Start) {
-		if (event.entity !is Player) return
-	}
-
-	@SubscribeEvent
-	fun onUseItemStop(event: LivingEntityUseItemEvent.Stop) {
-		if (event.entity !is Player) return
+		val entity = event.entity
+		if (entity !is Player) return
+		val itemStack = event.item
+		val item = itemStack.item
+		if (entity.level().isClientSide) {
+			if (item == IcItems.CANNED_ENKEPHALIN.get()) {
+				entity.getAnimationTransformer().trigger(
+					AnimationPlayData(
+						"player.imaginarycraft.canned_enkephalin", controllerName = AnimationControllers.ACTION
+					)
+				)
+			}
+		}
 	}
 
 	@SubscribeEvent
 	fun onUseItemTick(event: LivingEntityUseItemEvent.Tick) {
-		if (event.entity !is Player) return
+		val entity = event.entity
+		if (entity !is Player) return
+		if (entity.level().isClientSide) {
+		}
+	}
+
+	/**
+	 * 暂停使用物品
+	 */
+	@SubscribeEvent
+	fun onUseItemStop(event: LivingEntityUseItemEvent.Stop) {
+		val entity = event.entity
+		if (entity !is Player) return
+		val itemStack = event.item
+		val item = itemStack.item
+		if (entity.level().isClientSide) {
+			if (item == IcItems.CANNED_ENKEPHALIN.get()) {
+				entity.getAnimationTransformer().getController(AnimationControllers.ACTION)?.apply {
+					if (!equalsCurrentAnimId("player.imaginarycraft.canned_enkephalin")) return
+					stop()
+				}
+			}
+		}
+	}
+
+	/**
+	 * 物品使用完成
+	 */
+	@SubscribeEvent
+	fun onUseItemFinish(event: LivingEntityUseItemEvent.Finish) {
+		val entity = event.entity
+		if (entity !is Player) return
+		val itemStack = event.item
+		val item = itemStack.item
+		if (entity.level().isClientSide) {
+		}
 	}
 }
