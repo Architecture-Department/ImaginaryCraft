@@ -24,6 +24,15 @@ allOpen {
 repositories {
 	mavenLocal()
 
+	maven {
+		name "org.confluenceReleases"
+		url "https://maven.confluence.ink/releases"
+	}
+	maven {
+		name "org.confluenceSnapshots"
+		url "https://maven.confluence.ink/snapshots"
+	}
+
 	// Solarmoon 镜像 - Spark-Core 中国镜像
 	maven {
 		name = 'Solarmoon Maven (China Mirror)'
@@ -230,6 +239,10 @@ ext.addLocalLibs = {
 			dependencies.interfaceInjectionData(project.files(jarEntry))
 		}
 	}
+}
+
+ext.addParticleStorm = {
+	dependencies.implementation "org.mesdag:ParticleStorm:${particle_storm_version}"
 }
 
 // 本地 libs（jarJar 内嵌，RCF 用）

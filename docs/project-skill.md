@@ -332,6 +332,178 @@ architecture.<module_id>/
 
 ---
 
+## 10.8 MoLang 表达式系统
+
+MoLang 是 RCF 的表达式求值引擎，用于动画控制器中的变量计算和条件判断。
+
+### 核心类：MolangData
+
+MolangData 是实体级变量仓库 + 求值上下文。作为 AttachmentType 附加到 Entity 和 Level。
+
+`kotlin
+class MolangData(variables: MutableMap<String, DoubleSupplier> = HashMap())
+    val vars: MutableMap<String, DoubleSupplier>
+    var thisValue: DoubleSupplier?
+    fun resolve(name: String): Double
+    fun assign(name: String, value: Double)
+    fun updateAnimQueries(entity, animTime, deltaTime)
+    companion object
+        67 个 query.* 常量（含中文注释）
+        fun of(holder: Any?): MolangData
+`
+
+### 查询初始化策略
+
+所有实体状态查询通过 initEntityQueries() 一次性初始化，在 of() 首次调用时执行。
+查询以 DoubleSupplier lambda 形式存储——闭包捕获实体引用，每次 getAsDouble() 时从实体实时读取，无需每帧重建。
+
+updateAnimQueries() 仅处理动画专属值（anim_time, delta_time），这些值由控制器每帧更新。
+
+### 求值流程
+
+`
+AnimationControllerManager.tickAnimations(mapper)
+  -> MolangData.of(holder)  -> 获取/初始化实体 MolangData
+  -> ctrl.currentData = data -> 传给控制器
+  -> tickBackend -> data.vars[ANIM_TIME] = ...
+  -> expr.get(data) -> Variable.get(data) -> data.resolve(name)
+`
+
+### 变量作用域
+
+| 类型   | 前缀             | 存储                      |
+|------|----------------|-------------------------|
+| 实体变量 | variable. / v. | MolangData.vars         |
+| 临时变量 | temp. / t.     | MolangData.vars         |
+| 查询值  | query. / q.    | MolangData.vars（惰性求值）   |
+| 上下文  | context.       | MolangData.contexts（只读） |
+
+### MolangValue 多态求值
+
+MolangValue 接口提供多个便捷 get() 重载：
+
+- get(context: MolangData?) -- 显式传参求值
+- get(entity: Entity) -- 从实体获取 MolangData 后求值
+- get(proxyProvider) -- 从动画代理提供者获取求值
+- get(controller) -- 从控制器获取 currentData 后求值
+- get(controllerManager) -- 从管理器获取实体后求值
+
+### AST 节点
+
+Constant, Variable, VariableAssignment, Calculation, BooleanNegate, Negative, Ternary, Group, CompoundValue, BlockExpr,
+ReturnExpr, LoopExpr, ForEachExpr, This, BreakExpr, ContinueExpr + 29 个 math.* 函数
+
+### 动画事件系统
+
+BrBedrockAnimation 包含三个事件列表，按时间触发：
+
+| 事件类型 | JSON 字段          | 类                   | 触发时机                               |
+|------|------------------|---------------------|------------------------------------|
+| 音效   | sound_effects    | BrAnimationSound    | animTime >= time，播放 SoundEvent     |
+| 粒子   | particle_effects | BrAnimationParticle | animTime >= time，在客户端生成粒子          |
+| 时间线  | timeline         | BrAnimationTimeline | animTime >= time，执行 Molang/命令/实体事件 |
+
+#### 职责分离
+
+事件触发分为"收集"和"执行"两个阶段：
+
+1. **收集**：`BedrockAnimationController.collectEventsAt(anim)` — 遍历 sounds/particles/timelines，对比 `animTime`，查
+   `firedEvents` 集合防重复，返回 `AnimationEventsToFire` 容器
+2. **入队**：`AnimationControllerManager.queueEvents(events)` — 控制器收集后入队到 `pendingEvents` 列表
+3. **执行**：`AnimationControllerManager.firePendingEvents()` — 在 `tickAnimations` 的 `remerge()` 后统一调用：
+  - 时间线事件：双端直接执行 `it.apply(entity, data)`
+  - 音效/粒子事件：仅客户端，通过 `IEntityAnimationMapper` 解析骨骼位置后执行
+
+#### ProxyBone 变换分离
+
+ProxyBone 区分两类变换字段：
+
+| 字段                           | 类型     | 说明                                 |
+|------------------------------|--------|------------------------------------|
+| localPos/localRot/localScale | 局部     | 动画系统写入的原始值（keyframe 插值、remerge 合并） |
+| pos/rotation/scale           | 模型空间累积 | 继承计算后，从父到子累加的结果，供渲染使用              |
+
+### 继承变换计算
+
+AnimationControllerManager.computeInheritedTransforms(enableInheritance, noInheritNames)
+
+- 在
+  emerge() 后调用，将 local 值累积为模型空间值
+- nableInheritance = false 时直接复制 local → accumulated
+-
+
+oInheritNames 指定不继承父变换的骨骼名
+
+- 累加规则：pos = parent.pos + localPos，
+  otation = parent.rotation + localRot，scale = parent.scale * localScale
+
+### 额外骨骼系统
+
+| 概念                                        | 说明                                       |
+|-------------------------------------------|------------------------------------------|
+| ProxyBoneConfigData.extraBones            | JSON xtra_bones 段定义的额外 BrBone 几何骨骼      |
+| BedrockAnimationController.extraBones     | 当前动画的额外骨骼，	rigger() 时加载，orceClear() 时清除 |
+| AnimationControllerManager.rebuildBones() | 合并所有控制器的额外骨骼到 manager.bones              |
+| AnimationControllerManager.bones          | 最终使用的骨骼映射（brModel 基础 + 所有控制器额外骨骼，同名后覆盖前） |
+
+额外骨骼仅为几何定义（name/parent/pivot/cubes），不含动画变换（localPos/Rot/Scale 不会被修改）。
+
+### 骨骼位置解析
+
+`AnimationControllerManager.resolveBonePos()` — 从 `mergedProxy` 中按 `boneName`（JSON 中的 `locator` 字段）查找：
+
+1. 查骨骼下的定位器位置
+2. 查骨骼自身位置
+3. 都找不到返回 `Vector3d()`
+
+#### IEntityAnimationMapper 客户端事件方法
+
+接口中提供两套方法（默认实现检查 `if (!isClient) return`）：
+
+**坐标基方法**（传入已解析的 Vector3d）：
+
+- `playSoundEffect(sound, bonePos, molangData)` — 调用 `sound.apply(entity, bonePos, data)`
+- `playParticleEffect(particle, bonePos, molangData)` — 调用 `particle.apply(entity, bonePos, data)`
+
+**模型方法**（从 EntityModel 查找骨骼位置）：
+
+- `playSoundEffect(sound, model, molangData)` — 调用 `resolveBoneWorldPos(boneName, model)` 获取位置后执行
+- `playParticleEffect(particle, model, molangData)` — 同上
+- `resolveBoneWorldPos(boneName, model)` — 默认返回实体位置。`EntityAnimationMapper` 覆写为从 `mergedProxy` 查找
+
+#### 完整调用链
+
+```
+tickAnimations()
+  → 保存 prevMergedProxy（累积 pos/rotation/scale 供渲染帧插值）
+  → 控制器 ticks
+      → tickBackend → collectEventsAt(anim) → AnimationEventsToFire
+      → manager.queueEvents(events)
+  → remerge()：合并各控制器的 localPos/localRot/localScale
+  → computeInheritedTransforms()：累加父变换到 pos/rotation/scale
+  → firePendingEvents()
+      → timelines: 双端直接执行
+      → sounds/particles: 仅客户端
+          mapper.playSoundEffect(it, resolveBonePos(it), data)
+            → sound.apply(entity, bonePos, data)
+```
+
+#### 事件数据类
+
+- `BrAnimationSound.Effect.apply()`：播放音效，支持 `bindToActor` 绑定到实体位置，`boneName` 取自 JSON `locator` 字段
+- `BrAnimationParticle.Effect.apply()`：生成粒子，仅客户端，支持 `locator` 骨骼定位、`pre_effect_script` 预执行脚本
+- `BrAnimationTimeline.apply()`：评估 MoLang 表达式、执行以 `/` 开头的命令、处理以 `@` 开头的实体事件
+
+#### 事件追踪
+
+`BedrockAnimationController.firedEvents` 集合防止同一事件在单次播放中被重复触发。`trigger()` 或循环重播
+`resetAnimAndRestart()` 时自动清空。
+
+### Data Attachment
+
+- RcfAttachmentTypes.MOLANG_DATA -> AttachmentType<MolangData>，附加到 Entity 和 Level
+- 注册在 Rcf.kt init 块中通过 REGISTRY.register(modBus)
+- 获取方式：MolangData.of(entity) 或 entity.getData(...)
 ## 11. 关键工具类
 
 | 工具类              | 所在模块            | 功能          |

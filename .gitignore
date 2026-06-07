@@ -9,6 +9,7 @@ build/
 *.iws
 *.iml
 *.ipr
+*.bak
 out/
 !**/src/**/out/
 
