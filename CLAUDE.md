@@ -216,3 +216,24 @@ Copy-Item "path/to/EntityAnimationMapper.kt" ".migration_plan/path/to/EntityAnim
 ```
 
 `.migration_plan/` 目录结构镜像项目源码结构，备份文件后缀为 `.bak`。修改完成并编译通过后，可清理不再需要的备份。
+
+### 杂项文件归档规则
+
+所有非源码、非构建、非运行时的杂项资源统一存放在项目根目录 `_archived/` 中，按类型分类：
+
+| 子目录                  | 内容                 |
+|----------------------|--------------------|
+| `scripts/`           | 根目录工具脚本（temp_*.py） |
+| `docs/`              | TODO.md            |
+| `migration_backups/` | 迁移过程中的 .bak 版本备份   |
+| `migration_scripts/` | 迁移用的 Python 脚本     |
+| `migration_misc/`    | 迁移暂存的中间代码和 .ps1 脚本 |
+
+**不纳入归档的内容：**
+
+- `.claude/`, `.cursor/`, `.continue/` — IDE 技能配置，保持原位
+- `build/`, `run/` — 构建和运行时产物，Gradle/Minecraft 自动管理
+- `module/*/src/` — 源码
+- `额外资源/` — mod jar 和资源文件，保持原位不动
+- 各模块根目录的 `CLAUDE.md` — 项目配置
+

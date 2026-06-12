@@ -102,3 +102,6 @@ io/
 .claude/skills/mixinmcp-tools/SKILL.md
 .claude/skills/mixinmcp-tools/references/toolchains.md
 /.migration_plan/
+/.migration_backup/
+**/*.py
+/_archived/

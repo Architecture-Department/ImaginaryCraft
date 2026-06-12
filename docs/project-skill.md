@@ -425,17 +425,24 @@ ProxyBone 区分两类变换字段：
 
 ### 继承变换计算
 
-AnimationControllerManager.computeInheritedTransforms(enableInheritance, noInheritNames)
+`computeInheritedTransforms(enableInheritance, target, vararg noInheritNames): ProxyModel`
 
-- 在
-  emerge() 后调用，将 local 值累积为模型空间值
-- nableInheritance = false 时直接复制 local → accumulated
--
+- 在 `remerge()` 后调用，将 local 值累积为模型空间值
+- `target` 指定计算目标，默认 `mergedProxy`
+- `noInheritNames` 指定不继承父变换的骨骼名（vararg）
+- 返回 `target`，累加规则：`pos = parent.pos + localPos`，`rotation = parent.rotation + localRot`，
+  `scale = parent.scale * localScale`
 
-oInheritNames 指定不继承父变换的骨骼名
+### 服务端/客户端更新分离
 
-- 累加规则：pos = parent.pos + localPos，
-  otation = parent.rotation + localRot，scale = parent.scale * localScale
+| 方法                       | 调用方           | 行为                                       |
+|--------------------------|---------------|------------------------------------------|
+| `tickAnimations()`       | 实体 tick（仅服务端） | 控制器 tick → remerge → 完整继承 → 事件触发         |
+| `tickAnimationsClient()` | 渲染帧（仅客户端）     | remerge → root 过滤继承 → 事件触发               |
+| `tickAndRender()`        | 渲染帧（仅客户端）     | tickRender → tickAnimationsClient → 直接渲染 |
+
+`tickAnimations()` 现在有 `if (!isClient)` 守卫，仅在服务端执行。客户端渲染帧通过 `tickAnimationsClient()` 处理骨骼合并和继承计算，无需
+`prevMergedProxy` 插值。
 
 ### 额外骨骼系统
 
@@ -474,18 +481,24 @@ oInheritNames 指定不继承父变换的骨骼名
 #### 完整调用链
 
 ```
-tickAnimations()
-  → 保存 prevMergedProxy（累积 pos/rotation/scale 供渲染帧插值）
-  → 控制器 ticks
-      → tickBackend → collectEventsAt(anim) → AnimationEventsToFire
-      → manager.queueEvents(events)
+// 服务端（实体 tick）— tickAnimations()
+  控制器 ticks
+      → tickBackend → collectEventsAt(anim) → queueEvents
   → remerge()：合并各控制器的 localPos/localRot/localScale
-  → computeInheritedTransforms()：累加父变换到 pos/rotation/scale
+  → computeInheritedTransforms(true, mergedProxy)：完整继承
   → firePendingEvents()
-      → timelines: 双端直接执行
+      → timelines: 双端执行
       → sounds/particles: 仅客户端
           mapper.playSoundEffect(it, resolveBonePos(it), data)
-            → sound.apply(entity, bonePos, data)
+
+// 客户端（渲染帧）— tickAndRender()
+  各控制器 tickRender(deltaSec)
+  → tickAnimationsClient()
+      → remerge()
+      → computeInheritedTransforms(true, mergedProxy, "root")  // root 不过滤
+      → firePendingEvents()
+  → applyRootTransform(mergedProxy, poseStack)
+  → applyProxyToModel(mergedProxy, model)
 ```
 
 #### 事件数据类

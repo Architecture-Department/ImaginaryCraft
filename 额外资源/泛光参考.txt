@@ -1,0 +1,278 @@
+我来帮您提取和分析这个仓库中关于渲染和着色器的关键文件。现在获取更多关键着色器文件：完美！现在我为您整理并提供了所有**关键的泛光渲染和着色器文件**。让我创建一个汇总文档：
+
+```markdown name="GregTech-Bloom-Rendering-Summary.md"
+# GregTech Modern Post-Modern 泛光渲染系统完整指南
+
+## 📋 核心文件清单
+
+### Java 渲染系统文件
+1. **BloomRenderer.java** - 实际渲染逻辑 (17.5KB)
+2. **BloomHandler.java** - 泛光事件与票证管理 (11.3KB)
+3. **BloomShaderManager.java** - 着色器链加载管理 (7.8KB)
+4. **BloomEventListeners.java** - 事件监听器 (4KB)
+5. **GTRenderTypes.java** - 自定义渲染类型定义 (5.3KB)
+
+### GLSL 着色器文件
+
+#### 核心渲染着色器 (core/)
+- **rendertype_bloom.json** - 配置文件
+- **rendertype_bloom.vsh** - 顶点着色器
+- **rendertype_bloom.fsh** - 片段着色器
+
+#### 后期处理着色器 (program/)
+- **filter_bloom_color.fsh** - 深度感知过滤
+- **down_sampling.fsh** - 降采样（1→1/4）
+- **blur.fsh** - 高斯模糊
+- **up_sampling.fsh** - 升采样（合并）
+- **unreal_composite.fsh** - Unreal风格最终合成
+- **unity_composite.fsh** - Unity风格最终合成
+
+#### 特效着色器
+- **black_hole.fsh** - 黑洞特效
+
+---
+
+## 🎯 泛光渲染管线
+
+### 流程图
+```
+输入: 原始场景 + 泛光方块/粒子
+  ↓
+1. renderBloomInput()
+   - 设置着色器统一变量
+   - 激活BLOOM渲染目标
+   - 渲染泛光贡献
+
+2. processPostEffect()
+   ├─ down_sampling (4次降采样)
+   ├─ blur.fsh (高斯模糊)
+   │  ├─ 水平模糊
+   │  └─ 竖直模糊
+   ├─ up_sampling (升采样+合并)
+   └─ 最终合成 (Unreal/Unity)
+
+3. 混合到主渲染目标
+  ↓
+输出: 增强泛光效果的场景
+```
+
+---
+
+## 🔧 核心算法详解
+
+### 1. 深度过滤 (filter_bloom_color.fsh)
+```glsl
+// 线性化深度
+float linearizeDepth(float depth) {
+    float z = depth * 2.0 - 1.0;
+    return (2.0 * DepthNear * DepthFar) / 
+           (DepthFar + DepthNear - z * (DepthFar - DepthNear));
+}
+
+// 防止光晕穿透：如果深度不匹配，清除泛光
+if (abs(mainDepth - diffuseDepth) > depthTolerance) {
+    fragColor = vec4(0.0);
+}
+```
+
+### 2. 高斯模糊 (blur.fsh)
+```glsl
+// 使用高斯概率密度函数
+float gaussianPdf(float x, float sigma) {
+    float invSigma = 1 / sigma;
+    return (INV_SQRT_2PI * invSigma) * exp(-(x * x) * (0.5 * invSigma * invSigma));
+}
+
+// 双向采样模糊
+for(float x = 1; x < Radius; x += 1.0) {
+    float w = gaussianPdf(x, Radius);
+    vec2 uvOffset = BlurDir * invSize * x;
+    vec4 sample1 = texture(DiffuseSampler, texCoord + uvOffset);
+    vec4 sample2 = texture(DiffuseSampler, texCoord - uvOffset);
+    diffuseSum += (sample1 + sample2) * w;
+}
+```
+
+### 3. Unreal 风格合成 (unreal_composite.fsh)
+```glsl
+// 多层Bloom混合
+vec4 bloom = BloomStrength * (
+    lerpBloomFactor(1.0) * texture(BlurTexture1, texCoord) +
+    lerpBloomFactor(0.8) * texture(BlurTexture2, texCoord) +
+    lerpBloomFactor(0.6) * texture(BlurTexture3, texCoord) +
+    lerpBloomFactor(0.4) * texture(BlurTexture4, texCoord));
+
+// 应用Jodie Reinhard色调映射
+bloom.rgb = jodieReinhardTonemap(bloom.rgb);
+
+// 根据背景亮度调整Bloom强度
+float backgroundBrightness = (max + min) / 2.0;
+fragColor = vec4(
+    background.rgb + bloom.rgb * 
+    (MinBrightness + BaseBrightness + 
+     (1.0 - backgroundBrightness) * (MaxBrightness - MinBrightness)), 
+    bloom.a
+);
+```
+
+### 4. 黑洞特效 (black_hole.fsh)
+- 使用光线追踪算法
+- 实现引力透镜效应
+- 渲染吸积盘（旋转纹理）
+- 动态红移效果
+
+---
+
+## ⚙️ 配置参数
+
+```java
+// 从 BloomShaderManager.setupBloomShaderUniforms() 
+
+config.step           // 模糊步长（影响模糊强度）
+config.strength       // 泛光强度倍数
+config.baseBrightness // 基础亮度阈值
+config.minBrightness  // 最小泛光亮度
+config.maxBrightness  // 最大泛光亮度
+```
+
+---
+
+## 🔐 线程安全机制
+
+```java
+// ReentrantReadWriteLock 多线程管理
+BLOOM_RENDER_LOCK
+├── readLock()  // 多个渲染线程并发读
+├── writeLock() // 注册/注销时独占
+└── 防止 ConcurrentModificationException
+```
+
+---
+
+## 🎮 API 使用示例
+
+### 注册泛光效果
+
+```java
+// 绑定到方块实体
+BloomHandler.registerBloomRender(
+    renderSetup,           // 可选的渲染设置
+    bloomEffect,           // 实现IBloomEffect接口
+    blockEntity            // 自动绑定生命周期
+);
+
+// 绑定到粒子
+BloomHandler.registerBloomRender(
+    renderSetup,
+    bloomEffect,
+    particle
+);
+
+// 自定义生命周期
+BloomHandler.registerBloomRender(
+    renderSetup,
+    bloomEffect,
+    ticket -> ticket.isValid(),  // 有效性检查
+    () -> world               // 世界上下文
+);
+```
+
+### 实现IBloomEffect接口
+
+```java
+public class MyBloomEffect implements IBloomEffect {
+    
+    @Override
+    public void renderBloomEffect(
+        PoseStack poseStack, 
+        BufferBuilder buffer,
+        EffectRenderContext context) {
+        // 绘制泛光效果
+    }
+    
+    @Override
+    public boolean shouldRenderBloomEffect(EffectRenderContext context) {
+        // 判断是否应该渲染
+        return true;
+    }
+}
+```
+
+---
+
+## 🛡️ 兼容性
+
+✅ **支持：**
+- Minecraft 1.21+
+- NeoForge
+- Sodium/Iris (检测到时自动禁用，防止冲突)
+
+❌ **不支持：**
+- OptiFine (自动检测并禁用)
+- Iris/Oculus shader pack (禁用Bloom系统)
+
+---
+
+## 📊 性能特点
+
+- **安全模式**：与其他mod兼容，性能略低
+- **快速模式**：更高效的渲染，需要低级别Mixin
+- **深度感知**：防止光晕穿透，提高视觉质量
+- **并发渲染**：支持多线程并发处理
+
+---
+
+## 🎨 着色器总结
+
+| 着色器 | 输入 | 输出 | 功能 |
+|-------|------|------|------|
+| rendertype_bloom | 场景 | 泛光图 | 提取可发光的像素 |
+| filter_bloom_color | 泛光图+深度 | 过滤后泛光图 | 深度匹配过滤 |
+| down_sampling | 泛光图 | 缩小1/2 | 4倍降采样 |
+| blur | 降采样图 | 模糊图 | 高斯模糊 |
+| up_sampling | 模糊图+降级 | 原始大小 | 升采样+混合 |
+| unreal_composite | 原场景+Bloom | 最终输出 | 色调映射+合成 |
+| unity_composite | 原场景+Bloom | 最终输出 | 简化合成 |
+
+```
+```
+
+---
+
+## 📚 文件对应关系
+
+```
+项目结构
+├── Java代码 (src/main/java/com/gregtechceu/gtceu/client/)
+│   ├── bloom/
+│   │   ├── BloomRenderer.java       ← 渲染核心
+│   │   ├── BloomHandler.java        ← 事件管理
+│   │   ├── BloomShaderManager.java  ← 着色器管理
+│   │   └── BloomEventListeners.java ← 监听器
+│   └── renderer/
+│       └── GTRenderTypes.java       ← 渲染类型
+└── 着色器 (src/main/resources/assets/gtpm/shaders/)
+    ├── core/
+    │   ├── rendertype_bloom.*
+    │   └── black_hole.fsh
+    └── program/
+        ├── filter_bloom_color.fsh
+        ├── down_sampling.fsh
+        ├── blur.fsh
+        ├── up_sampling.fsh
+        ├── unreal_composite.fsh
+        └── unity_composite.fsh
+```
+
+---
+
+## 🎓 学习资源
+
+- **深度测试**：`filter_bloom_color.fsh` - NDC/线性化深度转换
+- **高斯模糊**：`blur.fsh` - 概率密度函数应用
+- **色调映射**：`unreal_composite.fsh` - Jodie Reinhard算法
+- **光线追踪**：`black_hole.fsh` - 高级射线行进技术
+
+```
+
+这份文档涵盖了项目的所有关键代码和着色器文件，您可以保存或继续深入特定部分！
