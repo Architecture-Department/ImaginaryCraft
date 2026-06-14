@@ -15,7 +15,7 @@ dependencies {
 	addLocalLibs()
 	addParticleStorm()
 
-	implementation files(fileTree(dir: "../../额外资源/mods", include: ["*.jar"]))
+	runtimeOnly files(fileTree(dir: "../../额外资源/mods", include: ["*.jar"]))
 }
 
 neoForge {

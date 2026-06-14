@@ -13,7 +13,7 @@ open class LcDatagenSoundDefinitionsProvider(
 
 	override fun registerSounds() {
 		add(IcSoundEvents.SODA_OPEN.get())
-		add(IcSoundEvents.SODA_DRINK.get())
+		add(IcSoundEvents.SODA_DRINK.get(), 2)
 		add(IcSoundEvents.SODA_DRINK_UP.get())
 		add(IcSoundEvents.SODA_COLLISION.get())
 	}

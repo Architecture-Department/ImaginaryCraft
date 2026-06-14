@@ -25,7 +25,8 @@ object PlayerEvents {
 			if (item == IcItems.CANNED_ENKEPHALIN.get()) {
 				entity.getAnimationTransformer().trigger(
 					AnimationPlayData(
-						"player.imaginarycraft.canned_enkephalin", controllerName = AnimationControllers.ACTION
+						"player.imaginarycraft.canned_enkephalin",
+						controllerName = AnimationControllers.ACTION
 					)
 				)
 			}
