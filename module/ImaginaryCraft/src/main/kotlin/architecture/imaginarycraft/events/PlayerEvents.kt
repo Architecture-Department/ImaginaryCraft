@@ -1,7 +1,7 @@
 package architecture.imaginarycraft.events
 
-import architecture.imaginarycraft.core.ImaginaryCraftConstants
 import architecture.imaginarycraft.init.IcItems
+import architecture.imaginarycraft.util.IcUtil
 import architecture.resonator_combat_framework.events.registry.AnimationControllers
 import architecture.resonator_combat_framework.module.entity_animation.animation.data.AnimationPlayData
 import architecture.resonator_combat_framework.module.entity_animation.mixed.IAnimationProxyProvider.Companion.getAnimationTransformer
@@ -10,7 +10,7 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent
 
-@EventBusSubscriber(modid = ImaginaryCraftConstants.ID)
+@EventBusSubscriber(modid = IcUtil.ID)
 object PlayerEvents {
 	/**
 	 * 开始使用物品

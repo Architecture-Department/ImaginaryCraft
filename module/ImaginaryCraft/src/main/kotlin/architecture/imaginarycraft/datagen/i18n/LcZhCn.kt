@@ -1,7 +1,7 @@
 package architecture.imaginarycraft.datagen.i18n
 
 import architecture.goldenboughs_lib.datagen.i18n.DatagenI18n
-import architecture.imaginarycraft.core.ImaginaryCraftConstants
+import architecture.imaginarycraft.util.IcUtil
 import net.minecraft.data.PackOutput
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.effect.MobEffect
@@ -13,10 +13,10 @@ import org.jetbrains.annotations.ApiStatus
 import java.util.function.Supplier
 
 @ApiStatus.Internal
-class LcZhCn(output: PackOutput) : DatagenI18n(output, ImaginaryCraftConstants.ID, "zh_cn") {
+class LcZhCn(output: PackOutput) : DatagenI18n(output, IcUtil.ID, "zh_cn") {
 
 	override fun addTranslations() {
-		addPackDescription(ImaginaryCraftConstants.ID, "异想工艺")
+		addPackDescription(IcUtil.ID, "异想工艺")
 		addItemList(ITEMS)
 		addEntityList(ENTITY)
 		addMobEffectList(MOB_EFFECT)

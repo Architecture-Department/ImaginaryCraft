@@ -1,5 +1,6 @@
 package architecture.imaginarycraft.core
 
+import architecture.imaginarycraft.util.IcUtil
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
@@ -10,9 +11,9 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory
 import thedarkcolour.kotlinforforge.neoforge.forge.LOADING_CONTEXT
 import thedarkcolour.kotlinforforge.neoforge.forge.MOD_BUS
 
-@Mod(value = ImaginaryCraftConstants.ID, dist = [Dist.CLIENT])
-@EventBusSubscriber(modid = ImaginaryCraftConstants.ID, value = [Dist.CLIENT])
-object ImaginaryCraftClient {
+@Mod(value = IcUtil.ID, dist = [Dist.CLIENT])
+@EventBusSubscriber(modid = IcUtil.ID, value = [Dist.CLIENT])
+object IcClient {
 	init {
 		val modContainer = LOADING_CONTEXT.activeContainer
 		val modBus = MOD_BUS
@@ -25,6 +26,6 @@ object ImaginaryCraftClient {
 
 	@SubscribeEvent
 	fun onClientSetup(event: FMLClientSetupEvent) {
-		ImaginaryCraftConstants.LOGGER.info("Client {}", ImaginaryCraftConstants.NAME)
+		IcUtil.LOGGER.info("Client {}", IcUtil.NAME)
 	}
 }

@@ -2,8 +2,8 @@ package architecture.imaginarycraft.datagen
 
 import architecture.goldenboughs_lib.util.datagen.buildClient
 import architecture.goldenboughs_lib.util.datagen.buildServer
-import architecture.imaginarycraft.core.ImaginaryCraftConstants
 import architecture.imaginarycraft.datagen.i18n.LcZhCn
+import architecture.imaginarycraft.util.IcUtil
 import net.minecraft.core.RegistrySetBuilder
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
@@ -12,7 +12,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent
 /**
  * 数据生成主类
  */
-@EventBusSubscriber(modid = ImaginaryCraftConstants.ID)
+@EventBusSubscriber(modid = IcUtil.ID)
 object LcDatagen {
 	@SubscribeEvent
 	fun gatherData(event: GatherDataEvent) {
@@ -22,13 +22,13 @@ object LcDatagen {
 
 		val existingFileHelper = event.existingFileHelper
 		// 服务端数据生成
-		event.buildServer(ModDatagenDatapackBuiltinEntries(output, completableFuture, RegistrySetBuilder()))
+		event.buildServer(LcDatagenDatapackBuiltinEntries(output, completableFuture, RegistrySetBuilder()))
 
 		// 客户端数据生成
 		event.buildClient(LcZhCn(output))
-		event.buildClient(ModDatagenParticle(output, existingFileHelper))
-		event.buildClient(ModDatagenItemModel(output, existingFileHelper))
-		event.buildClient(ModDatagenBlockState(output, existingFileHelper))
-		event.buildClient(ModDatagenSoundDefinitionsProvider(output, existingFileHelper))
+		event.buildClient(LcDatagenParticle(output, existingFileHelper))
+		event.buildClient(LcDatagenItemModel(output, existingFileHelper))
+		event.buildClient(LcDatagenBlockState(output, existingFileHelper))
+		event.buildClient(LcDatagenSoundDefinitionsProvider(output, existingFileHelper))
 	}
 }

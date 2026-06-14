@@ -1,6 +1,6 @@
-package architecture.imaginarycraft.core
+package architecture.imaginarycraft.util
 
-import architecture.goldenboughs_lib.util.LibUtil.rlOf
+import architecture.goldenboughs_lib.util.LibUtil
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.jetbrains.annotations.Contract
 
-object ImaginaryCraftConstants {
+object IcUtil {
 	const val ID: String = "imaginarycraft"
 	const val NAME: String = "ImaginaryCraft"
 
@@ -19,7 +19,7 @@ object ImaginaryCraftConstants {
 	@JvmStatic
 	@Contract("_ -> new")
 	fun modRl(name: String): ResourceLocation {
-		return rlOf(ID, name)
+		return LibUtil.rlOf(ID, name)
 	}
 
 	@JvmStatic

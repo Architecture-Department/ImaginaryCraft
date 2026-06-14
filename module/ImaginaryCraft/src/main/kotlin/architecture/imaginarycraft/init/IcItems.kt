@@ -2,8 +2,8 @@ package architecture.imaginarycraft.init
 
 import architecture.goldenboughs_lib.common.item.FoodItem
 import architecture.goldenboughs_lib.util.FoodPropertiesBuilder
-import architecture.imaginarycraft.core.ImaginaryCraftConstants
 import architecture.imaginarycraft.datagen.i18n.LcZhCn
+import architecture.imaginarycraft.util.IcUtil
 import net.minecraft.world.item.Item
 import net.neoforged.neoforge.registries.DeferredItem
 import net.neoforged.neoforge.registries.DeferredRegister
@@ -11,7 +11,7 @@ import java.util.function.Function
 
 object IcItems {
 	@JvmField
-	val REGISTRY: DeferredRegister.Items = DeferredRegister.Items.createItems(ImaginaryCraftConstants.ID)
+	val REGISTRY: DeferredRegister.Items = DeferredRegister.Items.createItems(IcUtil.ID)
 
 	@JvmField
 	val CANNED_ENKEPHALIN = registerFood(
