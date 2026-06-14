@@ -83,34 +83,144 @@ GoldenBoughsLib 按领域划分为以下子模块（`module/` 目录下）：
 
 ## 实体动画系统（ResonatorCombatFramework）
 
-### 核心文件
+### 包结构
 
-| 文件                            | 路径              | 职责                                                                                                                                       |
-|-------------------------------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| BedrockAnimation.kt           | bedrock/        | 数据模型：BrBoneKeyFrame、BrBoneAnimation、MolangVector3、LerpMode                                                                               |
-| BedrockAnimator.kt            | bedrock/        | 实际插值计算                                                                                                                                   |
-| BedrockAnimationController.kt | controller/     | 动画控制器实现，负责 time 推进 + Molang 求值                                                                                                           |
-| BaseAnimationController.kt    | controller/     | 控制器基类：状态机(IDLE/TRANSITIONING/PLAYING/PAUSED/FADING_OUT)、crossfade 过渡、blend 混合、播放边界检查。每个控制器持有自己的 `activeBoneConfig` 和额外的 `boneConfigs` 字段 |
-| ControllerManager.kt          | controller/     | 控制器管理器：Map<ResourceLocation, IAnimationController> O(1) 查找 + List 保持插入顺序。先添加的优先级更高                                                       |
-| IAnimationController.kt       | controller/     | 控制器接口：trigger/stop/pause/resume/tick 生命周期                                                                                                |
-| BedrockAnimationRegistry.kt   | registry/       | 从 JSON 加载动画资源                                                                                                                            |
-| EasingTypes.kt                | bedrock/molang/ | 仅保留 LINEAR、STEP、catmullRom                                                                                                               |
+所有动画代码在 `entity_animation/animation/` 下，按职责分层：
 
-### 映射器与渲染
+```
+animation/
+├── BakingBrAnimation.kt           — 动画数据结构（Baking 前缀 = JSON 解析中间表示）
+├── AnimationEventsToFire.kt       — 事件容器（音效/粒子/时间线）
+├── controller/
+│   ├── BedrockAnimationController.kt  — 控制器实现：状态机 + crossfade + tick 推进
+│   ├── IEntityAnimationController.kt  — 控制器接口
+│   └── ActionAnimationController.kt   — 动作层控制器（物品切换检测）
+├── mapper/
+│   ├── AnimationControllerManager.kt  — 控制器管理器：remerge + 插值 + 事件路由
+│   ├── EntityAnimationMapper.kt       — 映射器基类：trigger/stop/pause/resume
+│   ├── IEntityAnimationMapper.kt      — 映射器接口
+│   ├── LivingEntityAnimationMapper.kt — 生物映射器：骨骼标志收集
+│   ├── HumanoidEntityAnimationMapper.kt — 人形骨骼映射：→ HumanoidModel
+│   └── PlayerAnimationMapper.kt       — 玩家映射器：控制器注册 + 渲染入口
+├── data/
+│   ├── AnimationPlayData.kt           — 播放配置 data class
+│   ├── ProxyBoneConfigData.kt         — 骨骼配置（含静态 parse() 从 JSON 解析）
+│   ├── ProxyBoneFlags.kt             — 骨骼标志（lock/blend/pos/rot/scale 控制）
+│   └── ProxyTimelineEntry.kt          — 时间线条目
+├── model/
+│   ├── BakingBrModel.kt               — 几何模型 JSON 解析（Baking* 中间表示）
+│   ├── BrModel.kt                     — 运行时几何模型（MutableMap 骨骼 + 变换矩阵计算）
+│   └── ProxyModel.kt                  — 代理骨骼模型（每帧计算/合并的变换数据）
+└── molang/
+    ├── MathParser.kt / MolangValue.kt / MolangData.kt / ...
+    └── function/ + value/  — 函数和值节点
+```
 
-| 文件                               | 路径      | 职责                                                                                 |
-|----------------------------------|---------|------------------------------------------------------------------------------------|
-| EntityAnimationMapper.kt         | mapper/ | 抽象映射器：管理 ControllerManager、路由 trigger/stop/pause/resume                            |
-| PlayerAnimationMapper.kt         | mapper/ | 玩家映射器：init 中通过 NeoForge.EVENT_BUS.post 注册控制器，tickAndRender 逐控制器渲染                  |
-| HumanoidEntityAnimationMapper.kt | mapper/ | 人形骨骼映射：proxyModel → HumanoidModel 转换                                               |
-| LivingEntityAnimationMapper.kt   | mapper/ | 生物映射器基类：骨骼标志收集                                                                     |
-| AnimationPlayData.kt             | config/ | 播放配置 data class：animId/controllerName/animType/startTime/endTime/speedMultiplier 等 |
-| ProxyBoneConfigData.kt           | config/ | 骨骼配置数据：transitionTicks/resolveBoneFlags                                            |
-| IAnimationMapper.kt              | api/    | 映射器接口：trigger/stop/pause/resume/addController                                      |
+### Baking 架构（JSON 解析→运行时）
+
+JSON 解析使用 `Baking*` 中间类，运行时使用 `Br*` 类：
+
+```
+BakingBrModel  ──→  BrModel.of(bakingBrModel)  ──→  BrModel （运行时，MutableMap）
+BakingBrBone   ──→  BrBone.of(bakingBrBone)     ──→  BrBone  （可变字段）
+BakingBrCube   ──→  BrCube.of(bakingBrCube)     ──→  BrCube
+BakingBrLocator──→  BrLocator.of(bakingBrLocator)──→  BrLocator
+```
+
+### BrModel 动态骨骼管理
+
+`BrModel` 使用 `MutableMap<String, BrBone>` 存储骨骼，支持动态操作：
+
+- `set(BakingBrModel)` — 完全替换
+- `add(BakingBrModel)` — 合并，不覆盖已有骨骼
+- `overwriteAdd(BakingBrModel)` — 合并，覆盖已有骨骼
+- `clear()` — 清空
+- `computeBoneGlobalMatrix(name, proxyModel)` — 计算骨骼全局变换矩阵
+- `computeLocatorGlobalMatrix(name, proxyModel)` — 计算定位器全局变换矩阵
+
+### 核心数据结构
+
+| 类          | 字段                                                                         | 说明                 |
+|------------|----------------------------------------------------------------------------|--------------------|
+| BrModel    | bones: MutableMap<String, BrBone>, locators: MutableMap<String, BrLocator> | 运行时几何模型            |
+| BrBone     | name, parent?, pivot, rotation, cubes, locators                            | 骨骼数据（可变字段）         |
+| BrLocator  | name, boneName, position                                                   | 定位器数据              |
+| ProxyModel | bones: HashMap<String, ProxyBone>                                          | 帧变换数据（每 tick 重新计算） |
+| ProxyBone  | pos, rotation, scale, locators, emptyMask                                  | 骨骼变换 + 空掩码         |
+
+### 状态机
+
+`BedrockAnimationController.State`：
+
+```
+IDLE ──trigger──→ TRANSITIONING ──blend≥1──→ PLAYING ──stop──→ FADING_OUT ──blend≤0──→ IDLE
+                       ↑                        ↓
+                       └── resume ──────────────┘
+```
+
+- **IDLE**: 初始状态，不做任何计算
+- **TRANSITIONING**: 淡入/跨动画过渡。blendFactor 0→1（每 tick 推进 1/transitionTicks）。动画时间冻结，骨骼在冻结时间计算
+- **PLAYING**: 正常播放，动画时间每 tick 推进
+- **FADING_OUT**: 淡出。blendFactor 1→0。动画时间冻结
+- **PAUSED**: 暂停，冻结骨骼
+
+### 数据流
+
+```
+Server tick (20 TPS, PlayerTickEvent.Post):
+  tickAnimations:
+    prevMergedProxy = mergedProxy 快照（供渲染插值）
+    tickAdvance → 每控制器：
+      tickBlend() — 基于 tick 推进 blendFactor
+      tickBackend() — 计算骨骼写入 proxyModel
+        PLAYING: 推进 animTime
+        TRANSITIONING/FADING_OUT: freezeTime=true，冻结时间
+      crossfadeStep() — 过渡源→当前骨骼混合
+      状态转移检查（blend≥1→PLAYING, blend≤0→IDLE）
+    remerge() — 合并所有控制器的 proxyModel → mergedProxy
+    firePendingEvents() — 执行时间线/音效/粒子事件
+
+Render frame (mixin LivingEntityRenderer.render):
+  tickAndRender:
+    tickRender() — 仅 PLAYING 时清理骨骼
+    remerge() — 重新合并
+    getInterpolatedProxy(partialTick) — prevMergedProxy↔mergedProxy 线性插值
+    applyRootTransform() — root 骨骼 → PoseStack
+    applyProxyToModel() — 代理骨骼 → HumanoidModel ModelPart
+```
+
+### crossfade 过渡
+
+- `transitionSource` 存旧动画骨骼快照（含 emptyMask 同步）
+- `crossfadeStep()` 在 tickAdvance 中执行，每 tick 按 blendFactor 混合旧→新
+- 过渡结束后 blendFactor=1 → state = PLAYING, transitionSource = null
+- `effectiveWeight` = 适用于过渡源时 1f，否则 blendFactor
+- **修复**: emptyMask 同步——snapshotTransitionSource 复制 emptyMask；crossfadeStep lerp 后更新 emptyMask
+
+### 事件系统
+
+```
+tickAdvance 事件顺序:
+  TickPre → tickHandler → TickHandlerPost → [主逻辑] → TickPost
+```
+
+事件在 AnimationControllerManager.firePendingEvents() 中统一执行：
+
+- 时间线：双端（服务端+客户端）
+- 音效/粒子：仅客户端，从 mergedProxy 解析骨骼/定位器位置
+
+### AnimType（覆盖动画自身 loop）
+
+| 类型           | 行为                |
+|--------------|-------------------|
+| DEFAULT      | 使用动画自身的 loop 类型   |
+| PLAY_ONCE    | 播放一次后淡出           |
+| STOP_AT_LAST | 播放一次，停止于最后一帧（不淡出） |
+| LOOP         | 强制循环              |
 
 ### 控制器注册
 
-`AnimationControllerRegistry` 定义四个预置控制器，通过 `AnimationControllerRegisterEvent` 注册：
+`AnimationControllerRegisterEvent` 注册预置控制器：
 
 | 名称      | Priority | 角色   |
 |---------|----------|------|
@@ -118,70 +228,17 @@ GoldenBoughsLib 按领域划分为以下子模块（`module/` 目录下）：
 | MAIN    | 0        | 主控制器 |
 | COMMAND | -1000    | 命令层  |
 
-`PlayerAnimationMapper.init {}` 通过 `NeoForge.EVENT_BUS.post(AnimationControllerRegisterEvent())` 获取排序后的条目，直接调用
-`controllerManager.add(name, factory(isClient))` 添加。所有控制器（包括 DEFAULT）都在 nameMap + ordered 中。
+`PlayerAnimationMapper.init` 中通过 NeoForge.EVENT_BUS.post 获取排序条目，添加到 `AnimationControllerManager`。
 
-### 控制器管理系统
+### 已修复问题记录
 
-`ControllerManager` 使用双集合（Map O(1) 查找 + List 保持顺序）管理控制器，支持 `addAfter/addBefore` 灵活插入。先添加的优先级更高。
-
-**`getRenderable()` 逻辑：** 从高优先级到低优先级遍历活跃控制器。如果一个控制器的所有骨骼都已被更高优先级控制器渲染，且自身没有
-`isOverriding` 标志，则跳过。`isOverriding` 允许低优先级控制器覆盖高优先级控制器的活跃骨骼。
-
-### 触发流程
-
-1. 外部调用 `mapper.trigger(animId)` → 创建 `AnimationPlayData(animId, controllerName=DEFAULT)`
-2. `EntityAnimationMapper.trigger(config)` → `controllerManager.get(controllerName) ?? defaultController`
-3. `defaultController` 通过 `controllerManager.get(AnimationControllerRegistry.DEFAULT)` 查找，不命中时 fallback 到
-   `controllerManager.getDefault()`（第一个添加的控制器）
-4. 设置控制器的 `resolvedBoneConfig` 和 `boneConfigs`（持久覆盖）
-5. `controller.trigger(config)` → `BaseAnimationController.trigger()`
-
-### 每帧渲染（逐控制器）
-
-`PlayerAnimationMapper.tickAndRender()` 被 `LivingEntityRendererMixin` 调用：
-
-```kotlin
-tick(tickSec, deltaSec)
-for (ctrl in controllerManager.getRenderable()) {
-    val bac = ctrl as BaseAnimationController
-    val flags = bac.resolveBoneFlags(bac.currentAnimTime)  // 合并 activeBoneConfig + boneConfigs
-    val weight = ctrl.effectiveWeight
-    applyRootTransform(listOf(bac.proxyModel), poseStack, flags, weight)
-    applyProxyToModel(listOf(bac.proxyModel), model, flags, weight)
-}
-```
-
-每个控制器用自己的权重和骨骼标志独立渲染，高优先级先渲染，低优先级后渲染可覆盖。
-
-### 骨骼配置管理
-
-- **`activeBoneConfig`**（private）：每个控制器自己的活跃骨骼配置，trigger 时设置，forceClear 时清除
-- **`boneConfigs`**（var, nullable）：额外骨骼配置，优先级高于 activeBoneConfig，只覆盖已存在的骨骼。通常 null，由
-  EntityAnimationMapper.trigger 设置
-- **`resolvedBoneConfig`**（internal, nullable）：trigger 时临时覆盖，设完后在 trigger() 内立即消费
-
-### 状态机
-
-`BaseAnimationController.State`：
-
-- IDLE → trigger() → TRANSITIONING → blendFactor=1 → PLAYING
-- PLAYING → checkPlaybackBounds → FADING_OUT → blendFactor=0 → IDLE
-- PLAYING/TRANSITIONING → pause() → PAUSED → resume() → TRANSITIONING/PLAYING
-
-### 循环类型解析
-
-`"loop": true`（布尔值）和 `"loop": "loop"`（字符串）均支持。
-
-### AnimType（覆盖动画自身 loop 的设置）
-
-| 类型           | 行为                    |
-|--------------|-----------------------|
-| DEFAULT      | 使用动画自身的 loop 类型       |
-| PLAY_ONCE    | 播放一次后淡出               |
-| STOP_AT_LAST | 播放一次，停止于最后一帧（保持姿态不淡出） |
-| LOOP         | 强制循环播放                |
-
+1. `stop()` 不清理 transitionSource → 淡出无效。添加 `transitionSource = null`
+2. crossfade 首帧闪新动画。trigger 末尾立即执行 crossfadeStep()
+3. tickRender 删除过渡中的旧骨骼。改为仅在 PLAYING 时清理
+4. trigger() 中 affectedBones 未更新。捕获 computeAndWrite 返回值
+5. TickHandlerPost 发成 TickHandlerPre。修正事件类型
+6. TRANSITIONING→PLAYING 时 lastRawGameTime=-1 导致 delta=0。初始化 lastRawGameTime
+7. snapshotTransitionSource/crossfadeStep 不更新 emptyMask → remerge 跳过骨骼。同步 emptyMask
 ## 操作规则
 
 ### 文件删除规则
