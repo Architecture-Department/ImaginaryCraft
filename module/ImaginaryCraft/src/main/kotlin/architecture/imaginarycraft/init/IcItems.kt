@@ -2,7 +2,7 @@ package architecture.imaginarycraft.init
 
 import architecture.goldenboughs_lib.common.item.FoodItem
 import architecture.goldenboughs_lib.util.FoodPropertiesBuilder
-import architecture.imaginarycraft.datagen.i18n.LcZhCn
+import architecture.imaginarycraft.datagen.i18n.IcZhCn
 import architecture.imaginarycraft.util.IcUtil
 import net.minecraft.world.item.Item
 import net.neoforged.neoforge.registries.DeferredItem
@@ -43,7 +43,7 @@ object IcItems {
 			name, func, properties
 				.stacksTo(1)
 		)
-		LcZhCn.addI18nItemText(nameZh, registerItem)
+		IcZhCn.addI18nItemText(nameZh, registerItem)
 		return registerItem
 	}
 }

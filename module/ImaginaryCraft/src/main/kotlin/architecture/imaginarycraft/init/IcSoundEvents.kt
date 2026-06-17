@@ -1,6 +1,6 @@
 package architecture.imaginarycraft.init
 
-import architecture.imaginarycraft.datagen.i18n.LcZhCn
+import architecture.imaginarycraft.datagen.i18n.IcZhCn
 import architecture.imaginarycraft.util.IcUtil
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.sounds.SoundEvent
@@ -36,7 +36,7 @@ object IcSoundEvents {
 				SoundEvent.createVariableRangeEvent(IcUtil.modRl(id))
 			}
 		}
-		LcZhCn.addI18nSoundEventText(zhName, register)
+		IcZhCn.addI18nSoundEventText(zhName, register)
 		return register
 	}
 }

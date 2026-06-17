@@ -13,7 +13,7 @@ import org.jetbrains.annotations.ApiStatus
 import java.util.function.Supplier
 
 @ApiStatus.Internal
-class LcZhCn(output: PackOutput) : DatagenI18n(output, IcUtil.ID, "zh_cn") {
+class IcZhCn(output: PackOutput) : DatagenI18n(output, IcUtil.ID, "zh_cn") {
 
 	override fun addTranslations() {
 		addPackDescription(IcUtil.ID, "异想工艺")

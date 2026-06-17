@@ -1,7 +1,7 @@
 package architecture.imaginarycraft.init
 
 import architecture.ego_equipment.util.EGOEquipmentUtil
-import architecture.imaginarycraft.datagen.i18n.LcZhCn
+import architecture.imaginarycraft.datagen.i18n.IcZhCn
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceKey
@@ -53,7 +53,7 @@ object IcCreativeModeTabs {
 		displayItemsGenerator: CreativeModeTab.DisplayItemsGenerator
 	): CreativeModeTab.Builder {
 		val key = "itemGroup.${EGOEquipmentUtil.ID}.$name"
-		LcZhCn.addI18nText(zhCn, key)
+		IcZhCn.addI18nText(zhCn, key)
 		return CreativeModeTab.builder()
 			.title(Component.translatable(key))
 			.displayItems(displayItemsGenerator)

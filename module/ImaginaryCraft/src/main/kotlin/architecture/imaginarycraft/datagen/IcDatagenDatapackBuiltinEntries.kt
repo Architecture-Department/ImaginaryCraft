@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture
 /**
  * 创建一个数据包内置条目
  */
-class LcDatagenDatapackBuiltinEntries(
+class IcDatagenDatapackBuiltinEntries(
 	output: PackOutput,
 	registries: CompletableFuture<HolderLookup.Provider>,
 	datapackEntriesBuilder: RegistrySetBuilder

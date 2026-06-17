@@ -10,7 +10,7 @@ import java.util.*
 import java.util.function.Supplier
 import java.util.stream.Collectors
 
-class LcDatagenParticle(output: PackOutput, fileHelper: ExistingFileHelper) :
+class IcDatagenParticle(output: PackOutput, fileHelper: ExistingFileHelper) :
 	BasicParticleDescriptionProvider(output, fileHelper) {
 
 	override fun addDescriptions() {

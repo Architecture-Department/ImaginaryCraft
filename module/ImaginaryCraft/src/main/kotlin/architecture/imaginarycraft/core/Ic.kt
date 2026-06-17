@@ -2,6 +2,7 @@ package architecture.imaginarycraft.core
 
 import architecture.imaginarycraft.init.IcCreativeModeTabs
 import architecture.imaginarycraft.init.IcItems
+import architecture.imaginarycraft.init.IcParticleTypes
 import architecture.imaginarycraft.init.IcSoundEvents
 import architecture.imaginarycraft.util.IcUtil
 import architecture.imaginarycraft.util.IcUtil.LOGGER
@@ -25,6 +26,7 @@ object Ic {
 		val modBus = MOD_BUS
 
 		IcSoundEvents.REGISTRY.register(modBus)
+		IcParticleTypes.REGISTRY.register(modBus)
 		IcItems.REGISTRY.register(modBus)
 		IcCreativeModeTabs.REGISTRY.register(modBus)
 	}

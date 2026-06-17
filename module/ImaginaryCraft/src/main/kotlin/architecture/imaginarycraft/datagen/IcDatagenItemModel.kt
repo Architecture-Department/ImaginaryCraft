@@ -11,7 +11,7 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper
  * 物品模型数据生成器
  * 用于为模组中的物品生成对应的模型文件
  */
-class LcDatagenItemModel(output: PackOutput, existingFileHelper: ExistingFileHelper) :
+class IcDatagenItemModel(output: PackOutput, existingFileHelper: ExistingFileHelper) :
 	ItemModelProvider(output, IcUtil.ID, existingFileHelper) {
 
 	override fun registerModels() {

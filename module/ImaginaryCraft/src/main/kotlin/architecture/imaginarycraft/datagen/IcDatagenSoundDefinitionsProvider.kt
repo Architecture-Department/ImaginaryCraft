@@ -6,7 +6,7 @@ import architecture.imaginarycraft.util.IcUtil
 import net.minecraft.data.PackOutput
 import net.neoforged.neoforge.common.data.ExistingFileHelper
 
-open class LcDatagenSoundDefinitionsProvider(
+open class IcDatagenSoundDefinitionsProvider(
 	output: PackOutput,
 	existingFileHelper: ExistingFileHelper
 ) : BasicSoundDefinitionsProvider(output, IcUtil.ID, existingFileHelper) {
