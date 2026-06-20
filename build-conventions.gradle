@@ -269,13 +269,6 @@ ext.addJEI = {
 	dependencies.runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 }
 
-// JEI（纯 runtimeOnly，GoldenBoughsLib 用）
-ext.addJEIRuntime = {
-	dependencies.runtimeOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
-	dependencies.runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-	dependencies.runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
-}
-
 // MixinSquared（compileOnly annotationProcessor + jarJar）
 ext.addMixinSquared = {
 	dependencies.compileOnly(dependencies.annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-common:${mixinsquared_version}"))
