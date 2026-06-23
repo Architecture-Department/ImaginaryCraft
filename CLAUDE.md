@@ -52,8 +52,13 @@ NeoForge 1.21.1 多模块 Kotlin 项目。
 
 ## 文件操作规则
 
+- 创建新文件→ `apply_patch_add_file`
+- 删除文件→ `apply_patch_delete_file`
+- 修改已有文件→ `apply_patch_update_file`（行级 hunk）
+- 整文件替换→ 禁止，永远用行级补丁
+- 修改或创建文件后，调用 IDE 的 `reformat_code` 格式化工具
 - 删除前必须备份到 `.migration_plan/`，后缀 `.bak`，确认后再删
-- 删除前列出内容 → 检查引用 → 先移动（不立即删除）→ 编译验证 → 再删
+- 删除前列出内容→ 检查引用→ 先移动（不立即删除）→ 编译验证→ 再删
 - 文件写入：PowerShell `Set-Content` 写入前 `.TrimEnd("\r", "\n")`
 - 额外资源/ 文件夹不动
 
