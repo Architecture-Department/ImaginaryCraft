@@ -1,14 +1,14 @@
 package architecture.imaginarycraft.events.client
 
-import architecture.ego_equipment.util.EGOEquipmentUtil
 import architecture.imaginarycraft.common.particle.ItemStackParticle
+import architecture.imaginarycraft.util.IcUtil
 import net.minecraft.client.Minecraft
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent
 
-@EventBusSubscriber(modid = EGOEquipmentUtil.ID, value = [Dist.CLIENT])
+@EventBusSubscriber(modid = IcUtil.ID, value = [Dist.CLIENT])
 object RenderEvents {
 	@SubscribeEvent
 	fun onRenderAfterParticles(event: RenderLevelStageEvent) {
