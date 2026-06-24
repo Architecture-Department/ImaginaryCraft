@@ -23,9 +23,9 @@ object PlayerEvents {
 		if (entity.level().isClientSide) {
 			if (item == IcItems.CANNED_ENKEPHALIN.get()) {
 				entity.getAnimationTransformer().trigger(
+					AnimationControllers.ACTION,
+					"player.imaginarycraft.canned_enkephalin",
 					AnimationPlayData(
-						"player.imaginarycraft.canned_enkephalin",
-						controllerName = AnimationControllers.ACTION,
 						mirror = hand != InteractionHand.MAIN_HAND
 					)
 				)

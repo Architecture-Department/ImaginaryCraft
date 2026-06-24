@@ -23,8 +23,7 @@ object AnimationEvents {
 
 	@SubscribeEvent
 	fun onParticlePost(event: AnimationParticleEvent.Post) {
-		val animationData = event.getAnimationData()
-		val animId = animationData.animId
+		val animId = event.animationController.currentAnimId
 		val particleId = event.particleId
 		val locatorName = event.locatorName
 		val particleType = event.particle
