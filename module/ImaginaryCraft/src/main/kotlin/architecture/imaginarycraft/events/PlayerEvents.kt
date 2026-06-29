@@ -11,6 +11,8 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent
 
+private val CANNED_ENKEPHALIN = IcUtil.modRl("player/canned_enkephalin")
+
 @EventBusSubscriber(modid = IcUtil.ID)
 object PlayerEvents {
 	@SubscribeEvent
@@ -24,7 +26,7 @@ object PlayerEvents {
 			if (item == IcItems.CANNED_ENKEPHALIN.get()) {
 				entity.getAnimationTransformer().trigger(
 					AnimationControllers.ACTION,
-					"player.imaginarycraft.canned_enkephalin",
+					CANNED_ENKEPHALIN,
 					AnimationPlayData(
 						mirror = hand != InteractionHand.MAIN_HAND
 					)
@@ -51,7 +53,7 @@ object PlayerEvents {
 		if (entity.level().isClientSide) {
 			if (item == IcItems.CANNED_ENKEPHALIN.get()) {
 				entity.getAnimationTransformer().getController(AnimationControllers.ACTION)?.apply {
-					if (equalsCurrentAnimId("player.imaginarycraft.canned_enkephalin")) {
+					if (equalsCurrentAnimId(CANNED_ENKEPHALIN)) {
 						stop()
 					}
 				}

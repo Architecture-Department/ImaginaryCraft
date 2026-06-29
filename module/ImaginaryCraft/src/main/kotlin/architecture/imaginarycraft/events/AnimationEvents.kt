@@ -30,7 +30,7 @@ object AnimationEvents {
 		val rotate = event.rotate
 		val pos = event.pos
 		val holder = event.getHolder()
-		if (animId == "player.imaginarycraft.canned_enkephalin") {
+		if (animId?.path == "player.imaginarycraft.canned_enkephalin") {
 			// TODO 等之后再优化
 //			cannedEnkephalin(particleType, locatorName, holder, particleId, rotate, pos)
 			return
