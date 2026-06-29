@@ -1,6 +1,6 @@
 package architecture.imaginarycraft.init
 
-import architecture.ego_equipment.util.EGOEquipmentUtil
+import architecture.ego_equipment.util.EgoEquipUtil
 import architecture.imaginarycraft.datagen.i18n.IcZhCn
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
@@ -12,7 +12,7 @@ import net.neoforged.neoforge.registries.DeferredRegister
 
 object IcCreativeModeTabs {
 	val REGISTRY: DeferredRegister<CreativeModeTab> =
-		EGOEquipmentUtil.modRegister(BuiltInRegistries.CREATIVE_MODE_TAB)
+		EgoEquipUtil.modRegister(BuiltInRegistries.CREATIVE_MODE_TAB)
 
 	val FOOD: DeferredHolder<CreativeModeTab, CreativeModeTab> = register(
 		"food", "异想工艺 | 食物"
@@ -52,7 +52,7 @@ object IcCreativeModeTabs {
 		zhCn: String,
 		displayItemsGenerator: CreativeModeTab.DisplayItemsGenerator
 	): CreativeModeTab.Builder {
-		val key = "itemGroup.${EGOEquipmentUtil.ID}.$name"
+		val key = "itemGroup.${EgoEquipUtil.ID}.$name"
 		IcZhCn.addI18nText(zhCn, key)
 		return CreativeModeTab.builder()
 			.title(Component.translatable(key))
