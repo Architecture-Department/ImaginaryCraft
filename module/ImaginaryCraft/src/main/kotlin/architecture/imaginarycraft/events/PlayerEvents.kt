@@ -3,7 +3,7 @@ package architecture.imaginarycraft.events
 import architecture.imaginarycraft.init.IcItems
 import architecture.imaginarycraft.util.IcUtil
 import architecture.resonator_combat_framework.events.registry.AnimationControllers
-import architecture.resonator_combat_framework.module.entity_animation.IProxyAnimationProvider.Companion.getAnimationTransformer
+import architecture.resonator_combat_framework.module.entity_animation.IProxyAnimationProvider.Companion.getMapperProvider
 import architecture.resonator_combat_framework.module.entity_animation.animation.data.AnimationPlayData
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.player.Player
@@ -24,8 +24,7 @@ object PlayerEvents {
 		val hand = event.hand
 		if (entity.level().isClientSide) {
 			if (item == IcItems.CANNED_ENKEPHALIN.get()) {
-				entity.getAnimationTransformer().trigger(
-					AnimationControllers.ACTION,
+				entity.getMapperProvider().getController(AnimationControllers.ACTION)!!.trigger(
 					CANNED_ENKEPHALIN,
 					AnimationPlayData(
 						mirror = hand != InteractionHand.MAIN_HAND
@@ -52,7 +51,7 @@ object PlayerEvents {
 		val item = itemStack.item
 		if (entity.level().isClientSide) {
 			if (item == IcItems.CANNED_ENKEPHALIN.get()) {
-				entity.getAnimationTransformer().getController(AnimationControllers.ACTION)?.apply {
+				entity.getMapperProvider().getController(AnimationControllers.ACTION)?.apply {
 					if (equalsCurrentAnimId(CANNED_ENKEPHALIN)) {
 						stop()
 					}
