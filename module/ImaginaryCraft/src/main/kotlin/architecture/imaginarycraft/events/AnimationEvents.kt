@@ -3,7 +3,7 @@ package architecture.imaginarycraft.events
 import architecture.imaginarycraft.common.particle.ItemStackParticle
 import architecture.imaginarycraft.init.IcParticleTypes
 import architecture.imaginarycraft.util.IcUtil
-import architecture.resonator_combat_framework.module.entity_animation.event.AnimationParticleEvent
+import architecture.resonator_combat_framework.module.entity_animation.event.ParticleEvent
 import net.minecraft.core.particles.ParticleType
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
@@ -18,11 +18,11 @@ import org.joml.Vector3d
 @EventBusSubscriber(modid = IcUtil.ID)
 object AnimationEvents {
 	@SubscribeEvent
-	fun onParticlePre(event: AnimationParticleEvent.Pre) {
+	fun onParticlePre(event: ParticleEvent.Pre) {
 	}
 
 	@SubscribeEvent
-	fun onParticlePost(event: AnimationParticleEvent.Post) {
+	fun onParticlePost(event: ParticleEvent.Post) {
 		val animId = event.animationController.currentAnimId
 		val particleId = event.particleId
 		val locatorName = event.locatorName
