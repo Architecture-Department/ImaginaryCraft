@@ -3,7 +3,7 @@ package architecture.imaginarycraft.events
 import architecture.imaginarycraft.common.particle.ItemStackParticle
 import architecture.imaginarycraft.init.IcParticleTypes
 import architecture.imaginarycraft.util.IcUtil
-import architecture.resonator_combat_framework.module.entity_animation.event.ParticleEvent
+import architecture.resonator_combat_framework.module.animation.event.ParticleEvent
 import net.minecraft.core.particles.ParticleType
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel

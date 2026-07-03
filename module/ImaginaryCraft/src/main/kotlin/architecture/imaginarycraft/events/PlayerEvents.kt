@@ -3,8 +3,8 @@ package architecture.imaginarycraft.events
 import architecture.imaginarycraft.init.IcItems
 import architecture.imaginarycraft.util.IcUtil
 import architecture.resonator_combat_framework.events.registry.AnimationControllers
-import architecture.resonator_combat_framework.module.entity_animation.IAnimationProvider.Companion.getMapperProvider
-import architecture.resonator_combat_framework.module.entity_animation.animation.data.PlayConfig
+import architecture.resonator_combat_framework.module.animation.IAnimationProvider.Companion.getMapperProvider
+import architecture.resonator_combat_framework.module.animation.data.PlayConfig
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.player.Player
 import net.neoforged.bus.api.SubscribeEvent
