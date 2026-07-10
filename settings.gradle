@@ -2,6 +2,7 @@ pluginManagement {
 	repositories {
 		mavenLocal()
 		gradlePluginPortal()
+		maven { url = 'https://maven.muon.rip/releases' }
 		maven { url = "https://mirrors.cloud.tencent.com/neoforge/releases" }
 		maven { url = 'https://neoforged.forgecdn.net/releases' }
 		maven { url = 'https://maven.parchmentmc.org' }

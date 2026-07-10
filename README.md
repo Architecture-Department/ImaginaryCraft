@@ -86,7 +86,6 @@
 |---------------------------------------------------------------|--------|
 | [GeckoLib](https://github.com/bernie-g/geckolib)              | 基岩版模型库 |
 | [Curios](https://github.com/TheIllusiveC4/Curios)             | 饰品     |
-| [EpicFight](https://github.com/Antikythera-Studios/epicfight) | 史诗战斗   |
 
 <hr>
 

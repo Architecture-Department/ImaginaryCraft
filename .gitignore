@@ -89,6 +89,9 @@ generated/
 .kotlin
 io/
 
+# AI-generated documents
+**/CLAUDE.md
+
 # MixinMCP auto-injected rules
 .cursor/rules/minecraft-mod-project.mdc
 .cursor/skills/mixin-writing/SKILL.md
@@ -105,3 +108,40 @@ io/
 /.migration_backup/
 **/*.py
 /_archived/
+/.claude/skills/find-skills/.version
+/.claude/skills/skill-creator/.version
+/.claude/skills/skill-creator/agents/analyzer.md
+/.claude/skills/skill-creator/agents/comparator.md
+/.claude/skills/skill-creator/assets/eval_review.html
+/.claude/skills/skill-creator/agents/grader.md
+/.claude/skills/skill-creator/LICENSE.txt
+/.claude/skills/skill-creator/references/schemas.md
+/.claude/skills/find-skills/SKILL.md
+/.claude/skills/skill-creator/SKILL.md
+/.claude/skills/skill-creator/eval-viewer/viewer.html
+/.claude/skills/minecraft-modder-neoforge/_meta.json
+/.claude/skills/mc-mod-operations/references/advanced-gui-rendering.md
+/.claude/skills/minecraft-modding/scripts/check-build.sh
+/.claude/skills/minecraft-modding/references/common-patterns.md
+/.claude/skills/minecraft-modding/references/fabric-api.md
+/.claude/skills/minecraft-modding/references/forge-1.20.1-api.md
+/.claude/skills/mixin-master-reference/references/mixin.md
+/.claude/skills/mixin-master-reference/references/mixinextras.md
+/.claude/skills/mixin-master-reference/references/mixinsquared.md
+/.claude/skills/minecraft-modding/references/neoforge-api.md
+/.claude/skills/imaginarycraft-rules/agents/openai.yaml
+/.claude/skills/mc-mod-operations/agents/openai.yaml
+/.claude/skills/mixin-master-reference/agents/openai.yaml
+/.claude/settings.local.json
+/.claude/skills/imaginarycraft-rules/SKILL.md
+/.claude/skills/mc-mod-operations/SKILL.md
+/.claude/skills/minecraft-logs/SKILL.md
+/.claude/skills/minecraft-modder-neoforge/SKILL.md
+/.claude/skills/minecraft-modding/SKILL.md
+/.claude/skills/minecraft-modpack-server/SKILL.md
+/.claude/skills/minecraftconsoles-lce/SKILL.md
+/.claude/skills/mixin-master-reference/SKILL.md
+/.claude/skills/nbt/SKILL.md
+/.claude/
+/.cursor/
+/memory/
