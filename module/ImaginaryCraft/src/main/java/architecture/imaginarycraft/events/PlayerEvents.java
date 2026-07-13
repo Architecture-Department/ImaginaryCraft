@@ -14,56 +14,56 @@ import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 
 @EventBusSubscriber(modid = IcUtil.ID)
 public final class PlayerEvents {
-    private static final ResourceLocation CANNED_ENKEPHALIN = IcUtil.modRl("player/canned_enkephalin");
+	private static final ResourceLocation CANNED_ENKEPHALIN = IcUtil.modRl("player/canned_enkephalin");
 
-    private PlayerEvents() {
-    }
+	private PlayerEvents() {
+	}
 
-    @SubscribeEvent
-    public static void onUseItemStart(LivingEntityUseItemEvent.Start event) {
-        if (!(event.getEntity() instanceof Player entity)) return;
-        var itemStack = event.getItem();
-        var item = itemStack.getItem();
-        var hand = event.getHand();
-        if (entity.level().isClientSide()) {
-            if (item == IcItems.CANNED_ENKEPHALIN.get()) {
-                IAnimationProvider.Companion.getMapperProvider(entity)
-                        .getController(AnimationControllers.ACTION)
-                        .trigger(CANNED_ENKEPHALIN, new PlayConfig(hand != InteractionHand.MAIN_HAND));
-                return;
-            }
-        }
-    }
+	@SubscribeEvent
+	public static void onUseItemStart(LivingEntityUseItemEvent.Start event) {
+		if (!(event.getEntity() instanceof Player entity)) return;
+		var itemStack = event.getItem();
+		var item = itemStack.getItem();
+		var hand = event.getHand();
+		if (entity.level().isClientSide()) {
+			if (item == IcItems.CANNED_ENKEPHALIN.get()) {
+				IAnimationProvider.Companion.getMapperProvider(entity)
+					.getController(AnimationControllers.ACTION)
+					.trigger(CANNED_ENKEPHALIN, new PlayConfig.Build().mirror(hand != InteractionHand.MAIN_HAND).build());
+				return;
+			}
+		}
+	}
 
-    @SubscribeEvent
-    public static void onUseItemTick(LivingEntityUseItemEvent.Tick event) {
-        if (!(event.getEntity() instanceof Player entity)) return;
-        if (entity.level().isClientSide()) {
-        }
-    }
+	@SubscribeEvent
+	public static void onUseItemTick(LivingEntityUseItemEvent.Tick event) {
+		if (!(event.getEntity() instanceof Player entity)) return;
+		if (entity.level().isClientSide()) {
+		}
+	}
 
-    @SubscribeEvent
-    public static void onUseItemStop(LivingEntityUseItemEvent.Stop event) {
-        if (!(event.getEntity() instanceof Player entity)) return;
-        var itemStack = event.getItem();
-        var item = itemStack.getItem();
-        if (entity.level().isClientSide()) {
-            if (item == IcItems.CANNED_ENKEPHALIN.get()) {
-                var controller = IAnimationProvider.Companion.getMapperProvider(entity)
-                        .getController(AnimationControllers.ACTION);
-                if (controller != null && controller.equalsCurrentAnimId(CANNED_ENKEPHALIN)) {
-                    controller.stop();
-                }
-            }
-        }
-    }
+	@SubscribeEvent
+	public static void onUseItemStop(LivingEntityUseItemEvent.Stop event) {
+		if (!(event.getEntity() instanceof Player entity)) return;
+		var itemStack = event.getItem();
+		var item = itemStack.getItem();
+		if (entity.level().isClientSide()) {
+			if (item == IcItems.CANNED_ENKEPHALIN.get()) {
+				var controller = IAnimationProvider.Companion.getMapperProvider(entity)
+					.getController(AnimationControllers.ACTION);
+				if (controller != null && controller.equalsCurrentAnimId(CANNED_ENKEPHALIN)) {
+					controller.stop(-1);
+				}
+			}
+		}
+	}
 
-    @SubscribeEvent
-    public static void onUseItemFinish(LivingEntityUseItemEvent.Finish event) {
-        if (!(event.getEntity() instanceof Player entity)) return;
-        var itemStack = event.getItem();
-        var item = itemStack.getItem();
-        if (entity.level().isClientSide()) {
-        }
-    }
+	@SubscribeEvent
+	public static void onUseItemFinish(LivingEntityUseItemEvent.Finish event) {
+		if (!(event.getEntity() instanceof Player entity)) return;
+		var itemStack = event.getItem();
+		var item = itemStack.getItem();
+		if (entity.level().isClientSide()) {
+		}
+	}
 }

@@ -10,22 +10,22 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 @EventBusSubscriber(modid = IcUtil.ID, value = Dist.CLIENT)
 public final class RenderEvents {
-    private RenderEvents() {
-    }
+	private RenderEvents() {
+	}
 
-    @SubscribeEvent
-    public static void onRenderAfterParticles(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
-        var poseStack = event.getPoseStack();
-        var minecraft = Minecraft.getInstance();
-        var timer = minecraft.timer;
-        var partialTicks = timer.getGameTimeDeltaPartialTick(false);
-        var camera = event.getCamera();
-        var bufferSource = minecraft.renderBuffers().bufferSource();
-        poseStack.pushPose();
-        var position = camera.getPosition();
-        poseStack.translate(-position.x, -position.y, -position.z);
-        ItemStackParticle.getParticles().forEach(p -> p.render(poseStack, camera, partialTicks, bufferSource));
-        poseStack.popPose();
-    }
+	@SubscribeEvent
+	public static void onRenderAfterParticles(RenderLevelStageEvent event) {
+		if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
+		var poseStack = event.getPoseStack();
+		var minecraft = Minecraft.getInstance();
+		var timer = minecraft.getTimer();
+		var partialTicks = timer.getGameTimeDeltaPartialTick(false);
+		var camera = event.getCamera();
+		var bufferSource = minecraft.renderBuffers().bufferSource();
+		poseStack.pushPose();
+		var position = camera.getPosition();
+		poseStack.translate(-position.x, -position.y, -position.z);
+		ItemStackParticle.PARTICLES.forEach(p -> p.render(poseStack, camera, partialTicks, bufferSource));
+		poseStack.popPose();
+	}
 }

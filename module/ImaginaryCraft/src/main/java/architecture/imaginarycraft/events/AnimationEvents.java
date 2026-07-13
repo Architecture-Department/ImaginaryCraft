@@ -84,7 +84,14 @@ public final class AnimationEvents {
                 rotate.x,
                 rotate.y,
                 rotate.z,
-                true
+                true,
+                1.0,
+                0.5,
+                0.8,
+                0.0,
+                0.0,
+                0.0,
+                100
         );
         Level level = holder.level();
         if (level.isClientSide()) {
