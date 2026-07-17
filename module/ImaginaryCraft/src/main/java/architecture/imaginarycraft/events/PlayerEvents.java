@@ -4,7 +4,7 @@ import architecture.imaginarycraft.init.IcItems;
 import architecture.imaginarycraft.util.IcUtil;
 import architecture.resonator_combat_framework.animation.IAnimationProvider;
 import architecture.resonator_combat_framework.animation.data.PlayConfig;
-import architecture.resonator_combat_framework.init.registry.AnimationControllers;
+import architecture.resonator_combat_framework.init.RcfAnimationControllers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -28,9 +28,8 @@ public final class PlayerEvents {
 		if (entity.level().isClientSide()) {
 			if (item == IcItems.CANNED_ENKEPHALIN.get()) {
 				IAnimationProvider.Companion.getMapperProvider(entity)
-					.getController(AnimationControllers.ACTION)
+					.getController(RcfAnimationControllers.ACTION)
 					.trigger(CANNED_ENKEPHALIN, new PlayConfig.Build().mirror(hand != InteractionHand.MAIN_HAND).build());
-				return;
 			}
 		}
 	}
@@ -50,7 +49,7 @@ public final class PlayerEvents {
 		if (entity.level().isClientSide()) {
 			if (item == IcItems.CANNED_ENKEPHALIN.get()) {
 				var controller = IAnimationProvider.Companion.getMapperProvider(entity)
-					.getController(AnimationControllers.ACTION);
+					.getController(RcfAnimationControllers.ACTION);
 				if (controller != null && controller.equalsCurrentAnimId(CANNED_ENKEPHALIN)) {
 					controller.stop(-1);
 				}

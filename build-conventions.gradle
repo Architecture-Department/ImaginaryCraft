@@ -15,7 +15,7 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 allOpen {
-	annotation("architecture.goldenboughs_lib.api.AllOpe")
+	annotation("architecture.goldenboughs_lib.api.AllOpen")
 }
 
 // ---------------------------------------------------------------------
